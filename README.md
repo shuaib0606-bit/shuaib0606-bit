@@ -13,6 +13,8 @@
 
 <br><br>
 
+## 🗂️ Projects
+
 <a href="https://github.com/shuaib0606-bit/uiu-campusconnect">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/project-dark.svg">
@@ -38,33 +40,55 @@
 
 <br>
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/genz-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="assets/genz-light.svg">
+  <img alt="Gen-Z Gamers Pro: club platform for an eFootball Mobile club" src="assets/genz-dark.svg" width="100%">
+</picture>
+
+<p>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/crud-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="assets/crud-light.svg">
+    <img alt="Student Records: Flask and SQLite" src="assets/crud-dark.svg" width="49%">
+  </picture>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/java-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="assets/java-light.svg">
+    <img alt="Java OOP labs: ride-sharing system and coursework" src="assets/java-dark.svg" width="49%">
+  </picture>
+</p>
+
+<br>
+
 ## 🧭 How I build
 
 ```mermaid
 mindmap
   root((Arpon))
-    Backend
+    Web back end
       Laravel 13
-      PHP 8.3
+      Plain PHP
       MySQL
-      Filament
-    Frontend
+      Flask and SQLite
+    Web front end
       React 19 + Inertia
       Blade + Alpine.js
       Tailwind CSS v4
+      Vanilla JS
     Real time and AI
       Laravel Reverb websockets
       LLM tool calling
     Graphics
       Three.js
       Animated SVG
+    Java
+      OOP and interfaces
+      Swing GUIs
+      Threads
     Quality
       Selenium
       Playwright
-    Tooling
-      Git
-      Vite
-      Python scripts
 ```
 
 ## 🏙️ Contributions, as a city

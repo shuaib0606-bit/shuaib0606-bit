@@ -35,7 +35,7 @@ THEMES = {
 }
 # Languages are drawn in the project's palette rather than GitHub's default colours.
 LANG_COLORS = {'PHP': '#c15f3c', 'JavaScript': '#eda183', 'Blade': '#8a3d26', 'Python': '#5b8fd6',
-               'CSS': '#8bb254', 'Shell': '#b48aa8', 'TypeScript': '#2f6fc4', 'HTML': '#dc7a56'}
+               'CSS': '#8bb254', 'Java': '#b48aa8', 'Shell': '#9c8f82', 'TypeScript': '#2f6fc4', 'HTML': '#dc7a56'}
 EXTRA = ['#9c8f82', '#4c7a33', '#96708c', '#f5c7b3']
 
 QUERY = """query($login:String!){ user(login:$login){ createdAt followers{totalCount}
@@ -69,7 +69,8 @@ def fetch(token):
 
 
 def seed_languages():
-    """Language mix of the main project, used while its repository is private (the API can't see it)."""
+    """Language mix of all projects (CampusConnect, Gen-Z Gamers Pro, Student Records, Java labs),
+    measured from the source folders; used while those repositories are private or unpublished."""
     p = os.path.join(HERE, 'seed_languages.json')
     return json.load(open(p)) if os.path.exists(p) else {}
 
@@ -232,7 +233,7 @@ def stats(data, theme, langs):
     cx, cy, r = 690, 128, 58
     circ = 2 * math.pi * r
     off = 0
-    p.append(f'<text x="600" y="46" font-family="{FONT}" font-size="15" font-weight="700" fill="{t["muted"]}" letter-spacing="2">LANGUAGES</text>')
+    p.append(f'<text x="600" y="46" font-family="{FONT}" font-size="15" font-weight="700" fill="{t["muted"]}" letter-spacing="2">LANGUAGES · ALL PROJECTS</text>')
     p.append(f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{t["empty"]}" stroke-width="18"/>')
     for k, (name, (size, color)) in enumerate(items):
         color = LANG_COLORS.get(name, EXTRA[k % len(EXTRA)])

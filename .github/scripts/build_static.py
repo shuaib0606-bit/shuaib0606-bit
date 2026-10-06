@@ -109,7 +109,7 @@ def header(theme):
                  f'<animate attributeName="opacity" values="0;1;1;0" keyTimes="0;{start / period:.4f};{(start + 4.0) / period - 0.0001:.4f};{min(1, (start + 4.0) / period):.4f}" '
                  f'dur="{period}s" repeatCount="indefinite" calcMode="discrete"/></rect>')
     # chips
-    chips = ['Laravel', 'React', 'MySQL', 'Three.js', 'Selenium']
+    chips = ['Laravel', 'PHP', 'React', 'MySQL', 'Python', 'Java']
     cx = 60
     for k, c in enumerate(chips):
         w = len(c) * 8.4 + 26
@@ -139,10 +139,10 @@ def terminal():
              ('', None, 'Sindeed Shuaib Arpon · CSE undergrad at United International University, Dhaka'),
              ('$ ', 'cat now.md', None),
              ('', None, 'Building UIU CampusConnect, one verified home for a whole university'),
-             ('$ ', 'git log --oneline | wc -l', None),
+             ('$ ', 'git -C uiu-campusconnect log --oneline | wc -l', None),
              ('', None, '223 commits since August 2026'),
-             ('$ ', 'ls stack/', None),
-             ('', None, 'laravel  php  mysql  react  inertia  tailwind  alpine  three.js  python  selenium'),
+             ('$ ', 'ls ~/projects', None),
+             ('', None, 'uiu-campusconnect   gen-z-gamers-pro   student-records   java-oop-labs'),
              ]
     b = [f'<rect x=".5" y=".5" width="{W - 1}" height="{H - 1}" rx="16" fill="#0c0c0f" stroke="#292930"/>',
          '<rect x=".5" y=".5" width="999" height="40" rx="16" fill="#161619"/><rect x=".5" y="24" width="999" height="17" fill="#161619"/>',
@@ -177,7 +177,7 @@ def terminal():
 # ------------------------------------------------------------------ featured project
 def project(theme):
     t = TH[theme]
-    W, H = 1000, 520
+    W, H = 1000, 590
     defs = (f'<linearGradient id="pg" x1="0" x2="1"><stop offset="0" stop-color="{t["a1"]}"/><stop offset="1" stop-color="{t["a2"]}"/></linearGradient>'
             f'<marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">'
             f'<path d="M0,0 L10,5 L0,10 z" fill="{t["muted"]}"/></marker>')
@@ -214,18 +214,165 @@ def project(theme):
         b.append(f'<path d="{d}" stroke="{t["muted"]}" stroke-opacity=".5" stroke-width="1.6" stroke-dasharray="4 4" fill="none" marker-end="url(#ah)"/>')
         b.append(f'<circle r="4.5" fill="{c}"><animateMotion dur="2s" begin="{beg}s" repeatCount="indefinite" path="{d}"/>'
                  f'<animate attributeName="opacity" values="0;1;1;0" dur="2s" begin="{beg}s" repeatCount="indefinite"/></circle>')
+    # how it grew
+    steps = [('v1', 'SQLite prototype'), ('v2', 'PHP + MySQL · 124 files · Jun 2026'), ('v3', 'Laravel 13 rebuild · Aug–Sep 2026')]
+    x = 40
+    b.append(f'<text x="40" y="482" font-family="{FONT}" font-size="12" font-weight="700" letter-spacing="2" fill="{t["muted"]}">HOW IT GREW</text>')
+    for k, (v, lab) in enumerate(steps):
+        w = len(lab) * 7.0 + 58
+        col = t['a1'] if k == 2 else t['muted']
+        b.append(f'<g class="pop" style="animation-delay:{.3 + k * .15:.2f}s"><rect x="{x}" y="494" width="{w:.0f}" height="30" rx="15" fill="{t["chip"]}" stroke="{col}" stroke-opacity="{1 if k == 2 else .5}"/>'
+                 f'<text x="{x + 14}" y="514" font-family="{MONO}" font-size="12" font-weight="700" fill="{col}">{v}</text>'
+                 f'<text x="{x + 40}" y="514" font-family="{FONT}" font-size="13" fill="{t["text"]}">{escape(lab)}</text></g>')
+        x += w
+        if k < 2:
+            b.append(f'<path d="M{x + 6},509 L{x + 26},509" stroke="{t["muted"]}" stroke-width="1.6" marker-end="url(#ah)"/>')
+            x += 34
     # stats row
     stats = [('157', 'routes'), ('67', 'tables'), ('59', 'models'), ('33', 'controllers'), ('14', 'features'), ('627/627', 'Selenium checks')]
     x = 40
     for k, (n, lab) in enumerate(stats):
         w = 135 if k < 5 else 230
-        b.append(f'<g class="pop" style="animation-delay:{.5 + k * .1:.1f}s"><text x="{x}" y="490" font-family="{FONT}" font-size="26" font-weight="800" fill="url(#pg)">{n}</text>'
-                 f'<text x="{x + len(n) * 15.5 + 8}" y="489" font-family="{FONT}" font-size="13" fill="{t["muted"]}">{lab}</text></g>')
+        b.append(f'<g class="pop" style="animation-delay:{.5 + k * .1:.1f}s"><text x="{x}" y="562" font-family="{FONT}" font-size="26" font-weight="800" fill="url(#pg)">{n}</text>'
+                 f'<text x="{x + len(n) * 15.5 + 8}" y="561" font-family="{FONT}" font-size="13" fill="{t["muted"]}">{lab}</text></g>')
         x += w
     style = """
 .pop{animation:pop .7s cubic-bezier(.2,.8,.2,1) both}@keyframes pop{from{transform:translateY(10px)}to{transform:none}}
 """
     return svg(W, H, ''.join(b), style, defs, 'UIU CampusConnect architecture')
+
+
+
+# ------------------------------------------------------------------ other projects
+def chips_row(t, items, x, y, delay=0.2):
+    out = []
+    for k, c in enumerate(items):
+        w = len(c) * 7.4 + 22
+        out.append(f'<g class="pop" style="animation-delay:{delay + k * .07:.2f}s"><rect x="{x:.0f}" y="{y}" width="{w:.0f}" height="24" rx="12" fill="{t["chip"]}" stroke="{t["stroke"]}"/>'
+                   f'<text x="{x + w / 2:.0f}" y="{y + 16}" font-family="{FONT}" font-size="12" font-weight="600" fill="{t["text"]}" text-anchor="middle">{escape(c)}</text></g>')
+        x += w + 8
+    return ''.join(out)
+
+
+def card_frame(t, W, H, kicker, title, lines, accent):
+    b = [f'<rect x=".5" y=".5" width="{W - 1}" height="{H - 1}" rx="20" fill="{t["card"]}" stroke="{t["stroke"]}"/>',
+         f'<rect x="0" y="0" width="{W}" height="4" rx="2" fill="{accent}"/>',
+         f'<text x="30" y="44" font-family="{FONT}" font-size="12" font-weight="700" letter-spacing="2.5" fill="{accent}">{escape(kicker)}</text>',
+         f'<text x="30" y="78" font-family="{FONT}" font-size="26" font-weight="800" fill="{t["text"]}">{escape(title)}</text>']
+    for i, l in enumerate(lines):
+        b.append(f'<text x="30" y="{104 + i * 20}" font-family="{FONT}" font-size="14" fill="{t["muted"]}">{escape(l)}</text>')
+    return b
+
+
+def genz(theme):
+    """Gen-Z Gamers Pro: club platform for an eFootball Mobile club."""
+    t = TH[theme]
+    W, H = 1000, 340
+    b = card_frame(t, W, H, 'CLUB PLATFORM · PHP + MYSQL', 'Gen-Z Gamers Pro',
+                   ['The home of an eFootball Mobile gaming club: tournaments, live player auctions,',
+                    'rankings and awards, run by roles the super admin designs permission by permission.'], t['a3'])
+    b.append(chips_row(t, ['League', 'Knockout', 'Bidding auctions', 'Role designer', 'Rankings', 'POTW · POTM'], 30, 146))
+    # knockout bracket with the winning path lighting up
+    bx, by = 30, 192
+    teams = [(bx, by), (bx, by + 30), (bx, by + 60), (bx, by + 90)]
+    for i, (x, y) in enumerate(teams):
+        b.append(f'<rect x="{x}" y="{y}" width="92" height="22" rx="6" fill="{t["node"]}" stroke="{t["stroke"]}"/>'
+                 f'<text x="{x + 10}" y="{y + 15}" font-family="{FONT}" font-size="11" fill="{t["muted"]}">Team {"ABCD"[i]}</text>')
+    lines = [f'M122,203 H140 V218 H158', f'M122,233 H140 V218', f'M122,263 H140 V278 H158', f'M122,293 H140 V278',
+             f'M250,218 H268 V248 H286', f'M250,278 H268 V248']
+    for d in lines:
+        b.append(f'<path d="{d}" fill="none" stroke="{t["stroke"]}" stroke-width="1.6"/>')
+    for x, y, lab in [(158, 207, 'Team A'), (158, 267, 'Team D')]:
+        b.append(f'<rect x="{x}" y="{y}" width="92" height="22" rx="6" fill="{t["node"]}" stroke="{t["stroke"]}"/>'
+                 f'<text x="{x + 10}" y="{y + 15}" font-family="{FONT}" font-size="11" fill="{t["text"]}">{lab}</text>')
+    b.append(f'<rect class="champ" x="286" y="236" width="96" height="24" rx="12" fill="{t["a1"]}"/>'
+             f'<text x="334" y="252" font-family="{FONT}" font-size="11.5" font-weight="700" fill="#fff" text-anchor="middle">🏆 Champion</text>')
+    win = 'M122,203 H140 V218 H158 M250,218 H268 V248 H286'
+    b.append(f'<path class="winpath" d="{win}" fill="none" stroke="{t["a1"]}" stroke-width="2.4" stroke-dasharray="160" stroke-dashoffset="160"/>')
+    # live auction panel
+    ax, ay = 430, 192
+    b.append(f'<rect x="{ax}" y="{ay}" width="250" height="112" rx="14" fill="{t["node"]}" stroke="{t["a3"]}" stroke-opacity=".7"/>'
+             f'<circle class="live" cx="{ax + 18}" cy="{ay + 20}" r="5" fill="#e5484d"/>'
+             f'<text x="{ax + 30}" y="{ay + 25}" font-family="{FONT}" font-size="12" font-weight="700" fill="{t["text"]}">LIVE AUCTION</text>'
+             f'<text x="{ax + 18}" y="{ay + 50}" font-family="{FONT}" font-size="12" fill="{t["muted"]}">Pool · Neon Crown Elite</text>')
+    bids = ['1,200', '1,400', '1,900', '2,900']
+    for k, v in enumerate(bids):
+        b.append(f'<text class="bid" style="animation-delay:{k * 1.2:.1f}s" x="{ax + 18}" y="{ay + 88}" font-family="{FONT}" font-size="28" font-weight="800" fill="{t["a1"]}">{v}</text>')
+    for k, inc in enumerate(['+100', '+200', '+500', '+1000']):
+        b.append(f'<text x="{ax + 130 + (k % 2) * 56}" y="{ay + 74 + (k // 2) * 22}" font-family="{MONO}" font-size="11" fill="{t["muted"]}">{inc}</text>')
+    # numbers
+    nums = [('42', 'tables'), ('24', 'pages'), ('100', 'PHP files'), ('83', 'club members'), ('v20.39', 'releases')]
+    for k, (n, lab) in enumerate(nums):
+        y = 204 + k * 26
+        b.append(f'<g class="pop" style="animation-delay:{.4 + k * .1:.1f}s"><text x="{W - 210}" y="{y + 10}" font-family="{FONT}" font-size="20" font-weight="800" fill="{t["a3"]}">{n}</text>'
+                 f'<text x="{W - 130}" y="{y + 9}" font-family="{FONT}" font-size="12.5" fill="{t["muted"]}">{lab}</text></g>')
+    b.append(f'<text x="{W - 30}" y="44" font-family="{MONO}" font-size="12" fill="{t["muted"]}" text-anchor="end">PHP · MySQL · vanilla JS · CSS</text>')
+    style = """
+.pop{animation:pop .7s cubic-bezier(.2,.8,.2,1) both}@keyframes pop{from{transform:translateY(10px)}to{transform:none}}
+.winpath{animation:win 4s ease-in-out infinite}@keyframes win{0%{stroke-dashoffset:160}45%,85%{stroke-dashoffset:0}100%{stroke-dashoffset:160}}
+.champ{animation:champ 4s ease-in-out infinite}@keyframes champ{0%,40%{opacity:.35}50%,85%{opacity:1}100%{opacity:.35}}
+.live{animation:live 1.2s ease-in-out infinite}@keyframes live{50%{opacity:.2}}
+.bid{opacity:0;animation:bid 4.8s steps(1) infinite}@keyframes bid{0%{opacity:1}25%,100%{opacity:0}}
+"""
+    return svg(W, H, ''.join(b), style, '', 'Gen-Z Gamers Pro')
+
+
+def crud(theme):
+    """Student Records: Flask + SQLite CRUD app."""
+    t = TH[theme]
+    W, H = 490, 330
+    b = card_frame(t, W, H, 'PYTHON · FLASK', 'Student Records',
+                   ['Add, edit and delete student records', 'in a small Flask app backed by SQLite.'], t['a4'])
+    tx, ty = 30, 160
+    b.append(f'<rect x="{tx}" y="{ty}" width="430" height="118" rx="12" fill="{t["node"]}" stroke="{t["stroke"]}"/>')
+    for i, h in enumerate(['ID', 'Name', 'Dept', '']):
+        b.append(f'<text x="{tx + 16 + [0, 50, 230, 330][i]}" y="{ty + 22}" font-family="{FONT}" font-size="11" font-weight="700" letter-spacing="1" fill="{t["muted"]}">{h}</text>')
+    rows = [('1', 'Student One', 'CSE'), ('2', 'Student Two', 'EEE'), ('3', 'Student Three', 'BBA')]
+    for r, (i, n, d) in enumerate(rows):
+        y = ty + 46 + r * 26
+        b.append(f'<g class="row" style="animation-delay:{.3 + r * .25:.2f}s">'
+                 f'<rect class="{"hl" if r == 1 else ""}" x="{tx + 6}" y="{y - 16}" width="418" height="24" rx="6" fill="{t["a4"]}" fill-opacity="0"/>'
+                 f'<text x="{tx + 16}" y="{y}" font-family="{MONO}" font-size="12" fill="{t["muted"]}">{i}</text>'
+                 f'<text x="{tx + 66}" y="{y}" font-family="{FONT}" font-size="13" fill="{t["text"]}">{n}</text>'
+                 f'<text x="{tx + 246}" y="{y}" font-family="{FONT}" font-size="13" fill="{t["text"]}">{d}</text>'
+                 f'<text x="{tx + 346}" y="{y}" font-family="{FONT}" font-size="12" fill="{t["a1"]}">edit · delete</text></g>')
+    b.append(chips_row(t, ['Create', 'Read', 'Update', 'Delete', 'SQLite'], 30, 292, .6))
+    style = """
+.pop{animation:pop .7s cubic-bezier(.2,.8,.2,1) both}@keyframes pop{from{transform:translateY(10px)}to{transform:none}}
+.row{animation:pop .7s cubic-bezier(.2,.8,.2,1) both}
+.hl{animation:hl 3s ease-in-out infinite}@keyframes hl{0%,20%{fill-opacity:0}40%,70%{fill-opacity:.18}100%{fill-opacity:0}}
+"""
+    return svg(W, H, ''.join(b).replace('&amp;lt;', '&lt;').replace('&amp;gt;', '&gt;'), style, '', 'Student Records')
+
+
+def java(theme):
+    """Java OOP coursework: ride-sharing system and lab programs."""
+    t = TH[theme]
+    W, H = 490, 330
+    b = card_frame(t, W, H, 'JAVA · OOP COURSEWORK', 'Java OOP Labs',
+                   ['A ride-sharing system, plus 20+ lab programs:', 'Swing GUIs, threads, exceptions, interfaces, recursion.'], t['a5'])
+    def box(x, y, name, fields, col):
+        h = 32 + 15 * len(fields)
+        o = (f'<rect x="{x}" y="{y}" width="118" height="{h}" rx="8" fill="{t["node"]}" stroke="{col}"/>'
+             f'<text x="{x + 59}" y="{y + 17}" font-family="{MONO}" font-size="12" font-weight="700" fill="{t["text"]}" text-anchor="middle">{name}</text>'
+             f'<line x1="{x}" y1="{y + 24}" x2="{x + 118}" y2="{y + 24}" stroke="{col}" stroke-opacity=".6"/>')
+        for i, f in enumerate(fields):
+            o += f'<text x="{x + 10}" y="{y + 38 + i * 15}" font-family="{MONO}" font-size="10.5" fill="{t["muted"]}">{f}</text>'
+        return o
+    b.append(box(30, 160, 'User', ['name', 'id'], t['a5']))
+    b.append(box(30, 250, 'Driver', ['vehicle'], t['a5']))
+    b.append(box(186, 190, 'Ride', ['user', 'driver', 'from → to'], t['a1']))
+    b.append(box(342, 160, 'Location', ['name'], t['a5']))
+    b.append(box(342, 250, 'Service', ['rides[]'], t['a5']))
+    # Driver extends User (hollow triangle), Ride uses the others
+    b.append(f'<path d="M89,250 L89,218" stroke="{t["muted"]}" stroke-width="1.5"/><path d="M83,219 L89,208 L95,219 Z" fill="{t["card"]}" stroke="{t["muted"]}" stroke-width="1.5"/>')
+    for d in ['M148,190 L186,215', 'M148,262 L186,240', 'M342,182 L304,210', 'M342,262 L304,240']:
+        b.append(f'<path class="flow" d="{d}" stroke="{t["a1"]}" stroke-width="1.6" stroke-dasharray="4 4" fill="none"/>')
+    b.append(f'<text x="30" y="318" font-family="{FONT}" font-size="12.5" fill="{t["muted"]}">34 source files · 20+ IntelliJ projects</text>')
+    style = """
+.flow{animation:flow 1.2s linear infinite}@keyframes flow{to{stroke-dashoffset:-16}}
+"""
+    return svg(W, H, ''.join(b), style, '', 'Java OOP Labs')
 
 
 # ------------------------------------------------------------------ footer
@@ -253,6 +400,9 @@ def main():
         open(os.path.join(A, f'header-{th}.svg'), 'w').write(header(th))
         open(os.path.join(A, f'project-{th}.svg'), 'w').write(project(th))
         open(os.path.join(A, f'footer-{th}.svg'), 'w').write(footer(th))
+        open(os.path.join(A, f'genz-{th}.svg'), 'w').write(genz(th))
+        open(os.path.join(A, f'crud-{th}.svg'), 'w').write(crud(th))
+        open(os.path.join(A, f'java-{th}.svg'), 'w').write(java(th))
     open(os.path.join(A, 'terminal.svg'), 'w').write(terminal())
     print('ok')
 
