@@ -1,6 +1,6 @@
 """Builds the hand-made animated graphics of the profile README (run once; output is committed).
 
-    python .github/scripts/build_static.py   -> assets/{header,project,footer}-{dark,light}.svg, assets/terminal.svg
+    python .github/scripts/build_static.py   -> assets/{header,footer}-{dark,light}.svg, assets/terminal.svg
 """
 import os
 import random
@@ -398,11 +398,7 @@ def main():
     os.makedirs(A, exist_ok=True)
     for th in TH:
         open(os.path.join(A, f'header-{th}.svg'), 'w').write(header(th))
-        open(os.path.join(A, f'project-{th}.svg'), 'w').write(project(th))
         open(os.path.join(A, f'footer-{th}.svg'), 'w').write(footer(th))
-        open(os.path.join(A, f'genz-{th}.svg'), 'w').write(genz(th))
-        open(os.path.join(A, f'crud-{th}.svg'), 'w').write(crud(th))
-        open(os.path.join(A, f'java-{th}.svg'), 'w').write(java(th))
     open(os.path.join(A, 'terminal.svg'), 'w').write(terminal())
     print('ok')
 
