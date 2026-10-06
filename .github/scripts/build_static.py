@@ -59,14 +59,15 @@ def svg(w, h, body, style='', defs='', label=''):
 
 # ------------------------------------------------------------------ header
 QUOTES = [('The best way to predict the future is to invent it.', 'Alan Kay'),
-          ('Simplicity is prerequisite for reliability.', 'Edsger W. Dijkstra'),
-          ('First, solve the problem. Then, write the code.', 'John Johnson'),
-          ('Make it work, make it right, make it fast.', 'Kent Beck'),
-          ('Talk is cheap. Show me the code.', 'Linus Torvalds')]
+          ('The unexamined life is not worth living.', 'Socrates'),
+          ('It is not that we have a short time to live, but that we waste a lot of it.', 'Seneca'),
+          ('Waste no more time arguing about what a good man should be. Be one.', 'Marcus Aurelius'),
+          ('We are what we repeatedly do. Excellence, then, is not an act, but a habit.', 'Will Durant')]
 
 
 def quote_lines(q, size, width):
-    """Split a quote into lines no wider than `width` in the quote font."""
+    """Split a quote into lines no wider than `width` in the quote font. Two-line quotes are split
+    where the lines come out most even, so no single word is left alone on the second line."""
     lines, cur = [], ''
     for w in q.split():
         t = (cur + ' ' + w).strip()
@@ -75,7 +76,13 @@ def quote_lines(q, size, width):
         else:
             lines.append(cur)
             cur = w
-    return lines + [cur]
+    lines.append(cur)
+    if len(lines) == 2:
+        words = q.split()
+        best = min(range(1, len(words)), key=lambda i: max(text_path(' '.join(words[:i]), size, 0, 0)[1],
+                                                           text_path(' '.join(words[i:]), size, 0, 0)[1]))
+        lines = [' '.join(words[:best]), ' '.join(words[best:])]
+    return lines
 
 
 def header(theme, mobile=False):
@@ -139,15 +146,19 @@ def header(theme, mobile=False):
     # so if animation is paused or reduced, only the first quote shows.
     N, SLOT = len(QUOTES), 30
     for n, (q, who) in enumerate(QUOTES):
-        lines = quote_lines(q, QS, QW)
+        qs = QS
+        lines = quote_lines(q, qs, QW)
+        while mobile and len(lines) > 2:   # a long quote gets slightly smaller type to stay on two lines
+            qs -= 1
+            lines = quote_lines(q, qs, QW)
         paths, widest = [], 0
         for i, ln in enumerate(lines):
-            d, w = text_path(ln, QS, QX, QY + i * LH)
+            d, w = text_path(ln, qs, QX, QY + i * LH)
             paths.append(d)
             widest = max(widest, w)
         yb = QY + (len(lines) - 1) * LH
         if mobile:   # attribution on its own line, under the quote's right edge
-            d2, _ = text_path('— ' + who, WHO, QX + widest, yb + 36, anchor='end')
+            d2, _ = text_path('— ' + who, WHO, QX + max(widest, 430), yb + 36, anchor='end')  # clear of the dots
         else:
             d2, _ = text_path('— ' + who, WHO, QX + widest, 262, anchor='end')
         delay = -((N - n) % N) * SLOT - 1
