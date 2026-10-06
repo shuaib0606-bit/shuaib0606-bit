@@ -1,17 +1,20 @@
 <!-- Profile README for shuaib0606-bit. Every graphic is a hand-made SVG in /assets;
-     the skyline and stats in /assets/generated are redrawn daily by .github/workflows/profile.yml -->
+     the skyline and stats in /assets/generated are redrawn daily by .github/workflows/profile.yml.
+     Each picture has a phone version (-mobile), shown when the window is 700 px wide or less. -->
 
 <picture>
+  <source media="(max-width: 700px) and (prefers-color-scheme: dark)" srcset="assets/header-mobile-dark.svg">
+  <source media="(max-width: 700px)" srcset="assets/header-mobile-light.svg">
   <source media="(prefers-color-scheme: dark)" srcset="assets/header-dark.svg">
-  <source media="(prefers-color-scheme: light)" srcset="assets/header-light.svg">
   <img alt="Sindeed Shuaib Arpon. The best way to predict the future is to invent it. (Alan Kay)" src="assets/header-light.svg" width="100%">
 </picture>
 
 <br>
 
 <picture>
+  <source media="(max-width: 700px) and (prefers-color-scheme: dark)" srcset="assets/terminal-mobile-dark.svg">
+  <source media="(max-width: 700px)" srcset="assets/terminal-mobile-light.svg">
   <source media="(prefers-color-scheme: dark)" srcset="assets/terminal-dark.svg">
-  <source media="(prefers-color-scheme: light)" srcset="assets/terminal-light.svg">
   <img alt="Terminal: who I am, what I am building, and my projects" src="assets/terminal-light.svg" width="100%">
 </picture>
 
@@ -21,108 +24,41 @@
 
 ### <img src="assets/icons/code.svg" width="22" height="22" align="top"> Languages
 
-<table>
-  <tr>
-    <td width="64" align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="https://api.iconify.design/skill-icons/php-dark.svg"><img src="https://api.iconify.design/skill-icons/php-light.svg" width="40" height="40" alt="PHP"></picture></td>
-    <td><b>PHP</b><br><sub>Two full web apps: CampusConnect on Laravel and Gen-Z Gamers Pro in plain PHP</sub></td>
-    <td width="64" align="center"><img src="https://api.iconify.design/skill-icons/javascript.svg" width="40" height="40" alt="JavaScript"></td>
-    <td><b>JavaScript</b><br><sub>Alpine.js components, React pages and a Three.js 3D scene</sub></td>
-  </tr>
-  <tr>
-    <td width="64" align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="https://api.iconify.design/skill-icons/python-dark.svg"><img src="https://api.iconify.design/skill-icons/python-light.svg" width="40" height="40" alt="Python"></picture></td>
-    <td><b>Python</b><br><sub>Selenium tests, Playwright screen recording and a Flask app</sub></td>
-    <td width="64" align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="https://api.iconify.design/skill-icons/java-dark.svg"><img src="https://api.iconify.design/skill-icons/java-light.svg" width="40" height="40" alt="Java"></picture></td>
-    <td><b>Java</b><br><sub>OOP coursework: a ride-sharing system, Swing GUIs, threads and exceptions</sub></td>
-  </tr>
-</table>
+<p align="center"><picture><source media="(max-width: 700px) and (prefers-color-scheme: dark)" srcset="assets/skills/php-mobile-dark.svg"><source media="(max-width: 700px)" srcset="assets/skills/php-mobile-light.svg"><source media="(prefers-color-scheme: dark)" srcset="assets/skills/php-dark.svg"><img src="assets/skills/php-light.svg" width="414" alt="PHP: Two full web apps: CampusConnect on Laravel and Gen-Z Gamers Pro in plain PHP"></picture><picture><source media="(max-width: 700px) and (prefers-color-scheme: dark)" srcset="assets/skills/javascript-mobile-dark.svg"><source media="(max-width: 700px)" srcset="assets/skills/javascript-mobile-light.svg"><source media="(prefers-color-scheme: dark)" srcset="assets/skills/javascript-dark.svg"><img src="assets/skills/javascript-light.svg" width="414" alt="JavaScript: Alpine.js components, React pages and a Three.js 3D scene"></picture><picture><source media="(max-width: 700px) and (prefers-color-scheme: dark)" srcset="assets/skills/python-mobile-dark.svg"><source media="(max-width: 700px)" srcset="assets/skills/python-mobile-light.svg"><source media="(prefers-color-scheme: dark)" srcset="assets/skills/python-dark.svg"><img src="assets/skills/python-light.svg" width="414" alt="Python: Selenium tests, Playwright screen recording and a Flask app"></picture><picture><source media="(max-width: 700px) and (prefers-color-scheme: dark)" srcset="assets/skills/java-mobile-dark.svg"><source media="(max-width: 700px)" srcset="assets/skills/java-mobile-light.svg"><source media="(prefers-color-scheme: dark)" srcset="assets/skills/java-dark.svg"><img src="assets/skills/java-light.svg" width="414" alt="Java: OOP coursework: a ride-sharing system, Swing GUIs, threads and exceptions"></picture></p>
 
 ### <img src="assets/icons/server.svg" width="22" height="22" align="top"> Back end and data
 
-<table>
-  <tr>
-    <td width="64" align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="https://api.iconify.design/skill-icons/laravel-dark.svg"><img src="https://api.iconify.design/skill-icons/laravel-light.svg" width="40" height="40" alt="Laravel"></picture></td>
-    <td><b>Laravel</b><br><sub>CampusConnect: 157 routes, 59 models, a Filament admin panel and live chat with Reverb</sub></td>
-    <td width="64" align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="https://api.iconify.design/skill-icons/mysql-dark.svg"><img src="https://api.iconify.design/skill-icons/mysql-light.svg" width="40" height="40" alt="MySQL"></picture></td>
-    <td><b>MySQL</b><br><sub>A 67-table schema built from 50 migrations, and a 42-table club platform</sub></td>
-  </tr>
-  <tr>
-    <td width="64" align="center"><img src="https://api.iconify.design/skill-icons/sqlite.svg" width="40" height="40" alt="SQLite"></td>
-    <td><b>SQLite</b><br><sub>Throwaway test databases for automated runs, and Flask app storage</sub></td>
-    <td width="64" align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="https://api.iconify.design/skill-icons/flask-dark.svg"><img src="https://api.iconify.design/skill-icons/flask-light.svg" width="40" height="40" alt="Flask"></picture></td>
-    <td><b>Flask</b><br><sub>Student Records: a create, read, update and delete app</sub></td>
-  </tr>
-</table>
+<p align="center"><picture><source media="(max-width: 700px) and (prefers-color-scheme: dark)" srcset="assets/skills/laravel-mobile-dark.svg"><source media="(max-width: 700px)" srcset="assets/skills/laravel-mobile-light.svg"><source media="(prefers-color-scheme: dark)" srcset="assets/skills/laravel-dark.svg"><img src="assets/skills/laravel-light.svg" width="414" alt="Laravel: CampusConnect: 157 routes, 59 models, a Filament admin panel, Reverb chat"></picture><picture><source media="(max-width: 700px) and (prefers-color-scheme: dark)" srcset="assets/skills/mysql-mobile-dark.svg"><source media="(max-width: 700px)" srcset="assets/skills/mysql-mobile-light.svg"><source media="(prefers-color-scheme: dark)" srcset="assets/skills/mysql-dark.svg"><img src="assets/skills/mysql-light.svg" width="414" alt="MySQL: A 67-table schema built from 50 migrations, and a 42-table club platform"></picture><picture><source media="(max-width: 700px) and (prefers-color-scheme: dark)" srcset="assets/skills/sqlite-mobile-dark.svg"><source media="(max-width: 700px)" srcset="assets/skills/sqlite-mobile-light.svg"><source media="(prefers-color-scheme: dark)" srcset="assets/skills/sqlite-dark.svg"><img src="assets/skills/sqlite-light.svg" width="414" alt="SQLite: Throwaway test databases for automated runs, and Flask app storage"></picture><picture><source media="(max-width: 700px) and (prefers-color-scheme: dark)" srcset="assets/skills/flask-mobile-dark.svg"><source media="(max-width: 700px)" srcset="assets/skills/flask-mobile-light.svg"><source media="(prefers-color-scheme: dark)" srcset="assets/skills/flask-dark.svg"><img src="assets/skills/flask-light.svg" width="414" alt="Flask: Student Records: a create, read, update and delete app"></picture></p>
 
 ### <img src="assets/icons/window.svg" width="22" height="22" align="top"> Front end
 
-<table>
-  <tr>
-    <td width="64" align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="https://api.iconify.design/skill-icons/react-dark.svg"><img src="https://api.iconify.design/skill-icons/react-light.svg" width="40" height="40" alt="React"></picture></td>
-    <td><b>React</b><br><sub>Network, clubs, events and admin pages, served through Inertia</sub></td>
-    <td width="64" align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="https://api.iconify.design/skill-icons/alpinejs-dark.svg"><img src="https://api.iconify.design/skill-icons/alpinejs-light.svg" width="40" height="40" alt="Alpine.js"></picture></td>
-    <td><b>Alpine.js</b><br><sub>Post composer, reactions and the floating messenger</sub></td>
-  </tr>
-  <tr>
-    <td width="64" align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="https://api.iconify.design/skill-icons/tailwindcss-dark.svg"><img src="https://api.iconify.design/skill-icons/tailwindcss-light.svg" width="40" height="40" alt="Tailwind CSS"></picture></td>
-    <td><b>Tailwind CSS</b><br><sub>The CampusConnect design system, in light and dark themes</sub></td>
-    <td width="64" align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="https://api.iconify.design/skill-icons/threejs-dark.svg"><img src="https://api.iconify.design/skill-icons/threejs-light.svg" width="40" height="40" alt="Three.js"></picture></td>
-    <td><b>Three.js</b><br><sub>A 3D model of the UIU campus with a day and night cycle</sub></td>
-  </tr>
-  <tr>
-    <td width="64" align="center"><img src="https://api.iconify.design/skill-icons/html.svg" width="40" height="40" alt="HTML"></td>
-    <td><b>HTML</b><br><sub>Blade templates and plain PHP views</sub></td>
-    <td width="64" align="center"><img src="https://api.iconify.design/skill-icons/css.svg" width="40" height="40" alt="CSS"></td>
-    <td><b>CSS</b><br><sub>Glass panels, a cyber grid and motion for Gen-Z Gamers Pro</sub></td>
-  </tr>
-  <tr>
-    <td width="64" align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="https://api.iconify.design/skill-icons/vite-dark.svg"><img src="https://api.iconify.design/skill-icons/vite-light.svg" width="40" height="40" alt="Vite"></picture></td>
-    <td><b>Vite</b><br><sub>Asset builds, with Three.js split into its own chunk</sub></td>
-    <td width="64" align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="https://api.iconify.design/skill-icons/svg-dark.svg"><img src="https://api.iconify.design/skill-icons/svg-light.svg" width="40" height="40" alt="SVG"></picture></td>
-    <td><b>SVG</b><br><sub>The animated graphics on this page</sub></td>
-  </tr>
-</table>
+<p align="center"><picture><source media="(max-width: 700px) and (prefers-color-scheme: dark)" srcset="assets/skills/react-mobile-dark.svg"><source media="(max-width: 700px)" srcset="assets/skills/react-mobile-light.svg"><source media="(prefers-color-scheme: dark)" srcset="assets/skills/react-dark.svg"><img src="assets/skills/react-light.svg" width="414" alt="React: Network, clubs, events and admin pages, served through Inertia"></picture><picture><source media="(max-width: 700px) and (prefers-color-scheme: dark)" srcset="assets/skills/alpinejs-mobile-dark.svg"><source media="(max-width: 700px)" srcset="assets/skills/alpinejs-mobile-light.svg"><source media="(prefers-color-scheme: dark)" srcset="assets/skills/alpinejs-dark.svg"><img src="assets/skills/alpinejs-light.svg" width="414" alt="Alpine.js: Post composer, reactions and the floating messenger"></picture><picture><source media="(max-width: 700px) and (prefers-color-scheme: dark)" srcset="assets/skills/tailwindcss-mobile-dark.svg"><source media="(max-width: 700px)" srcset="assets/skills/tailwindcss-mobile-light.svg"><source media="(prefers-color-scheme: dark)" srcset="assets/skills/tailwindcss-dark.svg"><img src="assets/skills/tailwindcss-light.svg" width="414" alt="Tailwind CSS: The CampusConnect design system, in light and dark themes"></picture><picture><source media="(max-width: 700px) and (prefers-color-scheme: dark)" srcset="assets/skills/threejs-mobile-dark.svg"><source media="(max-width: 700px)" srcset="assets/skills/threejs-mobile-light.svg"><source media="(prefers-color-scheme: dark)" srcset="assets/skills/threejs-dark.svg"><img src="assets/skills/threejs-light.svg" width="414" alt="Three.js: A 3D model of the UIU campus with a day and night cycle"></picture><picture><source media="(max-width: 700px) and (prefers-color-scheme: dark)" srcset="assets/skills/html-mobile-dark.svg"><source media="(max-width: 700px)" srcset="assets/skills/html-mobile-light.svg"><source media="(prefers-color-scheme: dark)" srcset="assets/skills/html-dark.svg"><img src="assets/skills/html-light.svg" width="414" alt="HTML: Blade templates and plain PHP views"></picture><picture><source media="(max-width: 700px) and (prefers-color-scheme: dark)" srcset="assets/skills/css-mobile-dark.svg"><source media="(max-width: 700px)" srcset="assets/skills/css-mobile-light.svg"><source media="(prefers-color-scheme: dark)" srcset="assets/skills/css-dark.svg"><img src="assets/skills/css-light.svg" width="414" alt="CSS: Glass panels, a cyber grid and motion for Gen-Z Gamers Pro"></picture><picture><source media="(max-width: 700px) and (prefers-color-scheme: dark)" srcset="assets/skills/vite-mobile-dark.svg"><source media="(max-width: 700px)" srcset="assets/skills/vite-mobile-light.svg"><source media="(prefers-color-scheme: dark)" srcset="assets/skills/vite-dark.svg"><img src="assets/skills/vite-light.svg" width="414" alt="Vite: Asset builds, with Three.js split into its own chunk"></picture><picture><source media="(max-width: 700px) and (prefers-color-scheme: dark)" srcset="assets/skills/svg-mobile-dark.svg"><source media="(max-width: 700px)" srcset="assets/skills/svg-mobile-light.svg"><source media="(prefers-color-scheme: dark)" srcset="assets/skills/svg-dark.svg"><img src="assets/skills/svg-light.svg" width="414" alt="SVG: The animated graphics on this page"></picture></p>
 
 ### <img src="assets/icons/shield.svg" width="22" height="22" align="top"> Testing and tools
 
-<table>
-  <tr>
-    <td width="64" align="center"><img src="https://api.iconify.design/skill-icons/selenium.svg" width="40" height="40" alt="Selenium"></td>
-    <td><b>Selenium</b><br><sub>627 automated browser checks across four user roles, all passing</sub></td>
-    <td width="64" align="center"><img src="https://api.iconify.design/skill-icons/git.svg" width="40" height="40" alt="Git"></td>
-    <td><b>Git</b><br><sub>223 commits of CampusConnect history</sub></td>
-  </tr>
-  <tr>
-    <td width="64" align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="https://api.iconify.design/skill-icons/githubactions-dark.svg"><img src="https://api.iconify.design/skill-icons/githubactions-light.svg" width="40" height="40" alt="GitHub Actions"></picture></td>
-    <td><b>GitHub Actions</b><br><sub>Redraws the city on this profile every day</sub></td>
-    <td width="64" align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="https://api.iconify.design/skill-icons/cloudflare-dark.svg"><img src="https://api.iconify.design/skill-icons/cloudflare-light.svg" width="40" height="40" alt="Cloudflare"></picture></td>
-    <td><b>Cloudflare</b><br><sub>Turnstile bot checks on Gen-Z Gamers Pro</sub></td>
-  </tr>
-  <tr>
-    <td width="64" align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="https://api.iconify.design/skill-icons/vscode-dark.svg"><img src="https://api.iconify.design/skill-icons/vscode-light.svg" width="40" height="40" alt="VS Code"></picture></td>
-    <td><b>VS Code</b><br><sub>Everyday editor</sub></td>
-    <td width="64" align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="https://api.iconify.design/skill-icons/idea-dark.svg"><img src="https://api.iconify.design/skill-icons/idea-light.svg" width="40" height="40" alt="IntelliJ IDEA"></picture></td>
-    <td><b>IntelliJ IDEA</b><br><sub>Java coursework</sub></td>
-  </tr>
-</table>
+<p align="center"><picture><source media="(max-width: 700px) and (prefers-color-scheme: dark)" srcset="assets/skills/selenium-mobile-dark.svg"><source media="(max-width: 700px)" srcset="assets/skills/selenium-mobile-light.svg"><source media="(prefers-color-scheme: dark)" srcset="assets/skills/selenium-dark.svg"><img src="assets/skills/selenium-light.svg" width="414" alt="Selenium: 627 automated browser checks across four user roles, all passing"></picture><picture><source media="(max-width: 700px) and (prefers-color-scheme: dark)" srcset="assets/skills/git-mobile-dark.svg"><source media="(max-width: 700px)" srcset="assets/skills/git-mobile-light.svg"><source media="(prefers-color-scheme: dark)" srcset="assets/skills/git-dark.svg"><img src="assets/skills/git-light.svg" width="414" alt="Git: 224 commits of CampusConnect history, published on GitHub"></picture><picture><source media="(max-width: 700px) and (prefers-color-scheme: dark)" srcset="assets/skills/githubactions-mobile-dark.svg"><source media="(max-width: 700px)" srcset="assets/skills/githubactions-mobile-light.svg"><source media="(prefers-color-scheme: dark)" srcset="assets/skills/githubactions-dark.svg"><img src="assets/skills/githubactions-light.svg" width="414" alt="GitHub Actions: Redraws the city on this profile every day"></picture><picture><source media="(max-width: 700px) and (prefers-color-scheme: dark)" srcset="assets/skills/cloudflare-mobile-dark.svg"><source media="(max-width: 700px)" srcset="assets/skills/cloudflare-mobile-light.svg"><source media="(prefers-color-scheme: dark)" srcset="assets/skills/cloudflare-dark.svg"><img src="assets/skills/cloudflare-light.svg" width="414" alt="Cloudflare: Turnstile bot checks on Gen-Z Gamers Pro"></picture><picture><source media="(max-width: 700px) and (prefers-color-scheme: dark)" srcset="assets/skills/vscode-mobile-dark.svg"><source media="(max-width: 700px)" srcset="assets/skills/vscode-mobile-light.svg"><source media="(prefers-color-scheme: dark)" srcset="assets/skills/vscode-dark.svg"><img src="assets/skills/vscode-light.svg" width="414" alt="VS Code: Everyday editor"></picture><picture><source media="(max-width: 700px) and (prefers-color-scheme: dark)" srcset="assets/skills/idea-mobile-dark.svg"><source media="(max-width: 700px)" srcset="assets/skills/idea-mobile-light.svg"><source media="(prefers-color-scheme: dark)" srcset="assets/skills/idea-dark.svg"><img src="assets/skills/idea-light.svg" width="414" alt="IntelliJ IDEA: Java coursework"></picture></p>
 
 ## <img src="assets/icons/city.svg" width="26" height="26" align="top"> Contributions, as a city
 
 <picture>
+  <source media="(max-width: 700px) and (prefers-color-scheme: dark)" srcset="assets/generated/skyline-mobile-dark.svg">
+  <source media="(max-width: 700px)" srcset="assets/generated/skyline-mobile-light.svg">
   <source media="(prefers-color-scheme: dark)" srcset="assets/generated/skyline-dark.svg">
-  <source media="(prefers-color-scheme: light)" srcset="assets/generated/skyline-light.svg">
   <img alt="Last year of contributions drawn as an isometric city" src="assets/generated/skyline-light.svg" width="100%">
 </picture>
 
 <picture>
+  <source media="(max-width: 700px) and (prefers-color-scheme: dark)" srcset="assets/generated/stats-mobile-dark.svg">
+  <source media="(max-width: 700px)" srcset="assets/generated/stats-mobile-light.svg">
   <source media="(prefers-color-scheme: dark)" srcset="assets/generated/stats-dark.svg">
-  <source media="(prefers-color-scheme: light)" srcset="assets/generated/stats-light.svg">
   <img alt="Contribution streaks and top languages" src="assets/generated/stats-light.svg" width="100%">
 </picture>
 
 <sub>Redrawn every day by a GitHub Action from my own contribution data.</sub>
 
 <picture>
+  <source media="(max-width: 700px) and (prefers-color-scheme: dark)" srcset="assets/footer-mobile-dark.svg">
+  <source media="(max-width: 700px)" srcset="assets/footer-mobile-light.svg">
   <source media="(prefers-color-scheme: dark)" srcset="assets/footer-dark.svg">
-  <source media="(prefers-color-scheme: light)" srcset="assets/footer-light.svg">
   <img alt="" src="assets/footer-light.svg" width="100%">
 </picture>

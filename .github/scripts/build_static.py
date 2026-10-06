@@ -58,32 +58,56 @@ def svg(w, h, body, style='', defs='', label=''):
 
 
 # ------------------------------------------------------------------ header
-def header(theme):
+QUOTES = [('The best way to predict the future is to invent it.', 'Alan Kay'),
+          ('Simplicity is prerequisite for reliability.', 'Edsger W. Dijkstra'),
+          ('First, solve the problem. Then, write the code.', 'John Johnson'),
+          ('Make it work, make it right, make it fast.', 'Kent Beck'),
+          ('Talk is cheap. Show me the code.', 'Linus Torvalds')]
+
+
+def quote_lines(q, size, width):
+    """Split a quote into lines no wider than `width` in the quote font."""
+    lines, cur = [], ''
+    for w in q.split():
+        t = (cur + ' ' + w).strip()
+        if text_path(t, size, 0, 0)[1] <= width:
+            cur = t
+        else:
+            lines.append(cur)
+            cur = w
+    return lines + [cur]
+
+
+def header(theme, mobile=False):
+    """The name card. The phone version is narrower and taller, so its text is about twice as large
+    on a phone screen: the name takes two lines and each quote wraps."""
     t = TH[theme]
-    W, H = 1000, 330
+    W, H = (600, 470) if mobile else (1000, 330)
     rnd = random.Random(11)
     defs = (f'<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="{t["s1"]}"/>'
             f'<stop offset=".65" stop-color="{t["s2"]}"/><stop offset="1" stop-color="{t["s3"]}"/></linearGradient>'
-            f'<linearGradient id="name" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1000" y2="0">'
+            f'<linearGradient id="name" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="{W}" y2="0">'
             f'<stop offset="0" stop-color="{t["a1"]}"/><stop offset=".5" stop-color="{t["a2"]}"/><stop offset="1" stop-color="{t["a1"]}"/>'
-            f'<animate attributeName="x1" values="-1000;0" dur="6s" repeatCount="indefinite"/>'
-            f'<animate attributeName="x2" values="0;1000" dur="6s" repeatCount="indefinite"/></linearGradient>'
+            f'<animate attributeName="x1" values="-{W};0" dur="6s" repeatCount="indefinite"/>'
+            f'<animate attributeName="x2" values="0;{W}" dur="6s" repeatCount="indefinite"/></linearGradient>'
             f'<filter id="blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="40"/></filter>'
             f'<clipPath id="frame"><rect width="{W}" height="{H}" rx="22"/></clipPath>')
     b = [f'<g clip-path="url(#frame)"><rect width="{W}" height="{H}" fill="url(#sky)"/>']
     # aurora / glow blobs
     op = .55 if theme == 'dark' else .35
-    b.append(f'<g filter="url(#blur)" opacity="{op}"><ellipse class="blob1" cx="250" cy="90" rx="220" ry="70" fill="{t["a1"]}"/>'
-             f'<ellipse class="blob2" cx="760" cy="120" rx="200" ry="60" fill="{t["a2"]}"/>'
-             f'<ellipse class="blob3" cx="520" cy="40" rx="160" ry="40" fill="{t["a3"]}"/></g>')
+    k = W / 1000
+    b.append(f'<g filter="url(#blur)" opacity="{op}"><ellipse class="blob1" cx="{250 * k:.0f}" cy="90" rx="{220 * k:.0f}" ry="70" fill="{t["a1"]}"/>'
+             f'<ellipse class="blob2" cx="{760 * k:.0f}" cy="120" rx="{200 * k:.0f}" ry="60" fill="{t["a2"]}"/>'
+             f'<ellipse class="blob3" cx="{520 * k:.0f}" cy="40" rx="{160 * k:.0f}" ry="40" fill="{t["a3"]}"/></g>')
     if theme == 'dark':
-        for _ in range(90):
-            x, y, r = rnd.uniform(5, W - 5), rnd.uniform(5, 190), rnd.choice([.6, .8, 1, 1.4])
+        for _ in range(int(90 * k) + (20 if mobile else 0)):
+            x, y, r = rnd.uniform(5, W - 5), rnd.uniform(5, H - 140), rnd.choice([.6, .8, 1, 1.4])
             b.append(f'<circle class="tw" style="animation-delay:{rnd.uniform(0, 5):.2f}s" cx="{x:.1f}" cy="{y:.1f}" r="{r}" fill="#fff"/>')
         b.append('<line class="shoot" x1="0" y1="0" x2="90" y2="26" stroke="#fff" stroke-width="2" stroke-linecap="round"/>')
     else:
-        b.append(f'<circle cx="880" cy="70" r="34" fill="#fff2d6"/><circle class="halo" cx="880" cy="70" r="54" fill="#fff2d6" opacity=".35"/>')
-        for cx, cy, s in [(120, 70, 1.1), (420, 46, .8), (650, 90, .9)]:
+        sx = W - 120
+        b.append(f'<circle cx="{sx}" cy="70" r="34" fill="#fff2d6"/><circle class="halo" cx="{sx}" cy="70" r="54" fill="#fff2d6" opacity=".35"/>')
+        for cx, cy, s in ([(120, 70, 1.1), (420, 46, .8), (650, 90, .9)] if not mobile else [(90, 52, 1), (330, 34, .75)]):
             b.append(f'<g class="cloud" transform="translate({cx},{cy}) scale({s})" opacity=".9"><ellipse rx="40" ry="13" fill="#fff"/>'
                      f'<ellipse cx="20" cy="-9" rx="24" ry="15" fill="#fff"/><ellipse cx="-16" cy="-7" rx="18" ry="11" fill="#fff"/></g>')
     # skyline silhouette with windows
@@ -101,39 +125,53 @@ def header(theme):
                     b.append(f'<rect{cls}{d} x="{wx}" y="{wy}" width="4" height="6" fill="{t["win"]}" opacity="{.85 if theme == "dark" else .9}"/>')
         x += w + rnd.randint(2, 8)
     b.append('</g>')
-    # name and subtitle
-    b.append(f'<text class="rise" x="60" y="128" font-family="{FONT}" font-size="15" font-weight="700" letter-spacing="4" fill="{t["muted"]}">HI, I&#8217;M</text>')
-    b.append(f'<text class="rise" style="animation-delay:.15s" x="56" y="186" font-family="{FONT}" font-size="58" font-weight="800" fill="url(#name)">{NAME}</text>')
+    # name
+    if mobile:
+        b.append(f'<text class="rise" x="40" y="92" font-family="{FONT}" font-size="22" font-weight="700" letter-spacing="5" fill="{t["muted"]}">HI, I&#8217;M</text>')
+        b.append(f'<text class="rise" style="animation-delay:.15s" font-family="{FONT}" font-size="62" font-weight="800" fill="url(#name)">'
+                 f'<tspan x="36" y="160">Sindeed Shuaib</tspan><tspan x="36" y="230">Arpon</tspan></text>')
+        QX, QY, QS, QW, LH, WHO = 40, 292, 30, 520, 40, 21
+    else:
+        b.append(f'<text class="rise" x="60" y="128" font-family="{FONT}" font-size="15" font-weight="700" letter-spacing="4" fill="{t["muted"]}">HI, I&#8217;M</text>')
+        b.append(f'<text class="rise" style="animation-delay:.15s" x="56" y="186" font-family="{FONT}" font-size="58" font-weight="800" fill="url(#name)">{NAME}</text>')
+        QX, QY, QS, QW, LH, WHO = 60, 232, 25, 880, 0, 15
     # Quote carousel: one quote every 30 seconds, crossfading. Negative delays start each quote mid-cycle,
     # so if animation is paused or reduced, only the first quote shows.
-    quotes = [('The best way to predict the future is to invent it.', 'Alan Kay'),
-              ('Simplicity is prerequisite for reliability.', 'Edsger W. Dijkstra'),
-              ('First, solve the problem. Then, write the code.', 'John Johnson'),
-              ('Make it work, make it right, make it fast.', 'Kent Beck'),
-              ('Talk is cheap. Show me the code.', 'Linus Torvalds')]
-    N, SLOT = len(quotes), 30
-    for k, (q, who) in enumerate(quotes):
-        d, w = text_path(q, 25, 60, 232)
-        d2, _ = text_path('— ' + who, 15, 60 + w, 262, anchor='end')
-        delay = -((N - k) % N) * SLOT - 1
-        base = '' if k == 0 else 'opacity:0;'
-        b.append(f'<g class="q" style="{base}animation-delay:{delay}s"><path d="{d}" fill="{t["text"]}" fill-opacity=".92"/>'
+    N, SLOT = len(QUOTES), 30
+    for n, (q, who) in enumerate(QUOTES):
+        lines = quote_lines(q, QS, QW)
+        paths, widest = [], 0
+        for i, ln in enumerate(lines):
+            d, w = text_path(ln, QS, QX, QY + i * LH)
+            paths.append(d)
+            widest = max(widest, w)
+        yb = QY + (len(lines) - 1) * LH
+        if mobile:   # attribution on its own line, under the quote's right edge
+            d2, _ = text_path('— ' + who, WHO, QX + widest, yb + 36, anchor='end')
+        else:
+            d2, _ = text_path('— ' + who, WHO, QX + widest, 262, anchor='end')
+        delay = -((N - n) % N) * SLOT - 1
+        base = '' if n == 0 else 'opacity:0;'
+        b.append(f'<g class="q" style="{base}animation-delay:{delay}s"><path d="{" ".join(paths)}" fill="{t["text"]}" fill-opacity=".92"/>'
                  f'<path d="{d2}" fill="{t["a2"] if theme == "dark" else t["a1"]}"/></g>')
-    # progress dots under the quote
-    for k in range(N):
-        delay = -((N - k) % N) * SLOT - 1
-        b.append(f'<circle class="qd" style="animation-delay:{delay}s" cx="{64 + k * 14}" cy="257" r="3.2" fill="{t["a1"]}" opacity="{1 if k == 0 else .25}"/>')
+    # progress dots
+    dx, dy, dr, step = (QX + 4, 360, 4.5, 20) if mobile else (64, 257, 3.2, 14)
+    for n in range(N):
+        delay = -((N - n) % N) * SLOT - 1
+        b.append(f'<circle class="qd" style="animation-delay:{delay}s" cx="{dx + n * step}" cy="{dy}" r="{dr}" fill="{t["a1"]}" opacity="{1 if n == 0 else .25}"/>')
     vis = 100 / N
     qstyle = (f'.q{{animation:q {N * SLOT}s linear infinite}}'
               f'@keyframes q{{0%{{opacity:0;transform:translateY(6px)}}.6%{{opacity:1;transform:none}}{vis - .6:.2f}%{{opacity:1;transform:none}}'
               f'{vis:.2f}%{{opacity:0;transform:translateY(-6px)}}100%{{opacity:0;transform:translateY(-6px)}}}}'
               f'.qd{{animation:qd {N * SLOT}s linear infinite}}'
               f'@keyframes qd{{0%{{opacity:.25}}.6%,{vis - .6:.2f}%{{opacity:1}}{vis:.2f}%,100%{{opacity:.25}}}}')
+    sh = (f'@keyframes shoot{{0%,80%{{opacity:0;transform:translate({560 * k:.0f}px,10px)}}82%{{opacity:1}}'
+          f'94%{{opacity:0;transform:translate({900 * k:.0f}px,110px)}}100%{{opacity:0}}}}')
     style = """
 .tw{animation:tw 4s ease-in-out infinite}@keyframes tw{0%,100%{opacity:.9}50%{opacity:.15}}
 .win{animation:win 5s ease-in-out infinite}@keyframes win{0%,100%{opacity:.9}50%{opacity:.1}}
 .shoot{opacity:0;animation:shoot 9s linear infinite}
-@keyframes shoot{0%,80%{opacity:0;transform:translate(560px,10px)}82%{opacity:1}94%{opacity:0;transform:translate(900px,110px)}100%{opacity:0}}
+""" + sh + """
 .blob1{animation:b1 14s ease-in-out infinite alternate}@keyframes b1{to{transform:translate(120px,30px)}}
 .blob2{animation:b2 16s ease-in-out infinite alternate}@keyframes b2{to{transform:translate(-140px,20px)}}
 .blob3{animation:b3 12s ease-in-out infinite alternate}@keyframes b3{to{transform:translate(60px,40px)}}
@@ -145,45 +183,44 @@ def header(theme):
 
 
 # ------------------------------------------------------------------ terminal
-def terminal(theme='dark'):
-    W, H = 1000, 352
+def terminal(theme='dark', mobile=False):
+    """A terminal window. Every line is drawn from the start (no fade-in), because a browser may show
+    an SVG image frozen at its first frame; only the cursor blinks. The phone version uses larger
+    type and shorter lines."""
     T = TERM[theme]
-    lines = [('$ ', 'whoami', None),
-             ('', None, 'Sindeed Shuaib Arpon · CSE undergrad at United International University, Dhaka'),
-             ('$ ', 'cat now.md', None),
-             ('', None, 'Building UIU CampusConnect, one verified home for a whole university'),
-             ('$ ', 'git -C uiu-campusconnect log --oneline | wc -l', None),
-             ('', None, '223 commits since August 2026'),
-             ('$ ', 'ls ~/projects', None),
-             ('', None, 'uiu-campusconnect   gen-z-gamers-pro   student-records   java-oop-labs'),
-             ]
+    if mobile:
+        W, FS, OS, CW, LH, GAP = 600, 21, 20, 12.6, 30, 12
+        lines = [('whoami', ['Sindeed Shuaib Arpon', 'CSE undergrad · UIU, Dhaka']),
+                 ('cat now.md', ['Building UIU CampusConnect,', 'one verified home for a university']),
+                 ('git log --oneline | wc -l', ['224 commits since August 2026']),
+                 ('ls ~/projects', ['uiu-campusconnect  gen-z-gamers-pro', 'student-records    java-oop-labs'])]
+    else:
+        W, FS, OS, CW, LH, GAP = 1000, 16, 15, 9.6, 26, 10
+        lines = [('whoami', ['Sindeed Shuaib Arpon · CSE undergrad at United International University, Dhaka']),
+                 ('cat now.md', ['Building UIU CampusConnect, one verified home for a whole university']),
+                 ('git -C uiu-campusconnect log --oneline | wc -l', ['224 commits since August 2026']),
+                 ('ls ~/projects', ['uiu-campusconnect   gen-z-gamers-pro   student-records   java-oop-labs'])]
+    bar = 46 if mobile else 40
+    y0 = bar + (40 if mobile else 36)
+    rows = sum(1 + len(o) for _, o in lines)
+    H = int(y0 + rows * LH + len(lines) * GAP + (34 if mobile else 26))
     b = [f'<rect x=".5" y=".5" width="{W - 1}" height="{H - 1}" rx="16" fill="{T["bg"]}" stroke="{T["line"]}"/>',
-         f'<rect x=".5" y=".5" width="999" height="40" rx="16" fill="{T["bar"]}"/><rect x=".5" y="24" width="999" height="17" fill="{T["bar"]}"/>',
-         '<circle cx="26" cy="21" r="6.5" fill="#ff5f57"/><circle cx="48" cy="21" r="6.5" fill="#febc2e"/><circle cx="70" cy="21" r="6.5" fill="#28c840"/>',
-         f'<text x="500" y="26" font-family="{FONT}" font-size="13" fill="{T["muted"]}" text-anchor="middle">arpon@uiu — ~/campusconnect</text>']
-    cw, y, t = 9.6, 76, 0.4
-    for k, (prompt, cmd, out) in enumerate(lines):
-        if cmd is not None:
-            n = len(cmd)
-            dur = 0.05 * n + 0.2
-            b.append(f'<text class="ln" style="animation-delay:{t:.2f}s" x="28" y="{y}" font-family="{MONO}" font-size="16" fill="{T["prompt"]}">{escape(prompt.strip())}</text>')
-            b.append(f'<clipPath id="t{k}"><rect x="44" y="{y - 16}" height="22" width="0">'
-                     f'<animate attributeName="width" from="0" to="{n * cw + 4:.0f}" begin="{t + .2:.2f}s" dur="{dur:.2f}s" fill="freeze" calcMode="discrete" '
-                     f'values="{";".join(str(int(c * cw + 2)) for c in range(n + 1))}"/></rect></clipPath>')
-            b.append(f'<text clip-path="url(#t{k})" x="46" y="{y}" font-family="{MONO}" font-size="16" fill="{T["cmd"]}" textLength="{n * cw:.0f}" lengthAdjust="spacingAndGlyphs">{escape(cmd)}</text>')
-            t += dur + .45
-        else:
-            col = T['hi'] if out.startswith('223 ') else T['out']
-            b.append(f'<text class="ln" style="animation-delay:{t:.2f}s" x="46" y="{y}" font-family="{MONO}" font-size="15" fill="{col}">{escape(out)}</text>')
-            t += .35
-            y += 10
-        y += 26
-    b.append(f'<text class="ln" style="animation-delay:{t:.2f}s" x="28" y="{y}" font-family="{MONO}" font-size="16" fill="{T["prompt"]}">$</text>')
-    b.append(f'<rect class="blink" style="animation-delay:{t:.2f}s" x="46" y="{y - 15}" width="10" height="19" fill="{T["cmd"]}"/>')
-    style = """
-.ln{opacity:0;animation:ln .25s ease-out forwards}@keyframes ln{to{opacity:1}}
-.blink{opacity:0;animation:blink 1s steps(1) infinite}@keyframes blink{0%{opacity:1}50%{opacity:0}}
-"""
+         f'<rect x=".5" y=".5" width="{W - 1}" height="{bar}" rx="16" fill="{T["bar"]}"/><rect x=".5" y="{bar - 16}" width="{W - 1}" height="17" fill="{T["bar"]}"/>',
+         f'<circle cx="26" cy="{bar / 2 + 1}" r="6.5" fill="#ff5f57"/><circle cx="48" cy="{bar / 2 + 1}" r="6.5" fill="#febc2e"/><circle cx="70" cy="{bar / 2 + 1}" r="6.5" fill="#28c840"/>',
+         f'<text x="{W / 2 + (30 if mobile else 0)}" y="{bar / 2 + 6}" font-family="{FONT}" font-size="{16 if mobile else 13}" fill="{T["muted"]}" text-anchor="middle">arpon@uiu — ~/campusconnect</text>']
+    y = y0
+    for cmd, outs in lines:
+        b.append(f'<text x="28" y="{y}" font-family="{MONO}" font-size="{FS}" fill="{T["prompt"]}">$</text>'
+                 f'<text x="{28 + 1.9 * CW:.0f}" y="{y}" font-family="{MONO}" font-size="{FS}" fill="{T["cmd"]}">{escape(cmd)}</text>')
+        y += LH
+        for out in outs:
+            col = T['hi'] if out.startswith('224 ') else T['out']
+            b.append(f'<text xml:space="preserve" x="{28 + 1.9 * CW:.0f}" y="{y}" font-family="{MONO}" font-size="{OS}" fill="{col}">{escape(out)}</text>')
+            y += LH
+        y += GAP
+    b.append(f'<text x="28" y="{y}" font-family="{MONO}" font-size="{FS}" fill="{T["prompt"]}">$</text>')
+    b.append(f'<rect class="blink" x="{28 + 1.9 * CW:.0f}" y="{y - FS + 2}" width="{CW:.0f}" height="{FS + 3}" fill="{T["cmd"]}"/>')
+    style = '.blink{animation:blink 1.1s steps(1) infinite}@keyframes blink{50%{opacity:0}}'
     return svg(W, H, ''.join(b), style, '', 'Terminal: about Sindeed Shuaib Arpon')
 
 
@@ -389,9 +426,9 @@ def java(theme):
 
 
 # ------------------------------------------------------------------ footer
-def footer(theme):
+def footer(theme, mobile=False):
     t = TH[theme]
-    W, H = 1000, 140
+    W, H = (600, 150) if mobile else (1000, 140)
     def wave(amp, y, ph):
         pts = ' '.join(f'{x},{y + amp * (1 if (x // 125 + ph) % 2 else -1)}' for x in range(-250, 1251, 125))
         d = f'M-250,{y} ' + ' '.join(f'Q{x - 62},{y + amp * (1 if (x // 125 + ph) % 2 else -1)} {x},{y}' for x in range(-125, 1376, 125)) + f' L1375,{H} L-250,{H} Z'
@@ -399,7 +436,7 @@ def footer(theme):
     b = [f'<path class="w1" d="{wave(14, 70, 0)}" fill="{t["a2"]}" opacity=".35"/>',
          f'<path class="w2" d="{wave(12, 84, 1)}" fill="{t["a1"]}" opacity=".45"/>',
          f'<path class="w3" d="{wave(10, 98, 0)}" fill="{t["a1"]}" opacity=".85"/>',
-         f'<text x="500" y="44" font-family="{FONT}" font-size="15" font-weight="600" fill="{t["muted"]}" text-anchor="middle">thanks for stopping by</text>']
+         f'<text x="{W / 2:.0f}" y="{48 if mobile else 44}" font-family="{FONT}" font-size="{24 if mobile else 15}" font-weight="600" fill="{t["muted"]}" text-anchor="middle">thanks for stopping by</text>']
     style = """
 .w1{animation:w 9s ease-in-out infinite alternate}.w2{animation:w 7s ease-in-out infinite alternate-reverse}.w3{animation:w 11s ease-in-out infinite alternate}
 @keyframes w{from{transform:translateX(0)}to{transform:translateX(125px)}}
@@ -410,10 +447,10 @@ def footer(theme):
 def main():
     os.makedirs(A, exist_ok=True)
     for th in TH:
-        open(os.path.join(A, f'header-{th}.svg'), 'w').write(header(th))
-        open(os.path.join(A, f'footer-{th}.svg'), 'w').write(footer(th))
-    for th in TH:
-        open(os.path.join(A, f'terminal-{th}.svg'), 'w').write(terminal(th))
+        for m, tag in ((False, ''), (True, '-mobile')):   # -mobile: the phone versions
+            open(os.path.join(A, f'header{tag}-{th}.svg'), 'w').write(header(th, m))
+            open(os.path.join(A, f'footer{tag}-{th}.svg'), 'w').write(footer(th, m))
+            open(os.path.join(A, f'terminal{tag}-{th}.svg'), 'w').write(terminal(th, m))
     print('ok')
 
 

@@ -3,7 +3,7 @@
     python .github/scripts/build_profile.py                  # in GitHub Actions (uses GITHUB_TOKEN)
     python .github/scripts/build_profile.py --from-json x.json  # offline, from saved data
 
-Writes assets/generated/{skyline,stats}-{dark,light}.svg:
+Writes assets/generated/{skyline,stats}[-mobile]-{dark,light}.svg (-mobile: the phone versions):
 - skyline: the last year of contributions drawn as an isometric campus at night (or by day),
   one building per day, taller for busier days, with lit windows.
 - stats: contributions this year, current and longest streak, busiest day, and top languages.
@@ -110,17 +110,19 @@ def level(c, mx):
 
 
 # ------------------------------------------------------------------ skyline
-def skyline(data, theme):
+def skyline(data, theme, mobile=False):
+    """The city. The phone version (600 wide) draws the same city scaled to fit, with larger text."""
     t = THEMES[theme]
     days = sorted(data['days'])[-371:]
     first = dt.date.fromisoformat(days[0][0])
     pad = (first.weekday() + 1) % 7  # GitHub weeks start on Sunday
     cells = [None] * pad + days
-    W, H = 1000, 430
+    W, H = (600, 470) if mobile else (1000, 430)
+    W0 = 1000  # the city itself is always laid out on the 1000-wide grid
     WX, WY, DX, DY = 15.4, 3.3, -8.5, 7.2  # screen step for one week, and for one day
     mx = max([c for _, c in days] + [1])
     weeks = (len(cells) + 6) // 7
-    ox = (W - (weeks * WX + 7 * DX)) / 2 - 7 * DX * 0.15
+    ox = (W0 - (weeks * WX + 7 * DX)) / 2 - 7 * DX * 0.15
     oy = 150
     parts = []
     parts.append(f'<rect width="{W}" height="{H}" rx="18" fill="url(#sky)"/>')
@@ -128,13 +130,13 @@ def skyline(data, theme):
         import random
         rnd = random.Random(7)
         for k in range(70):
-            x, y, r = rnd.uniform(10, W - 10), rnd.uniform(8, 150), rnd.choice([0.6, 0.8, 1, 1.3])
+            x, y, r = rnd.uniform(10, W - 10), rnd.uniform(8, 120 if mobile else 150), rnd.choice([0.6, 0.8, 1, 1.3])
             parts.append(f'<circle class="tw" style="animation-delay:{rnd.uniform(0, 4):.2f}s" cx="{x:.1f}" cy="{y:.1f}" r="{r}" fill="#fff"/>')
-        parts.append('<circle cx="905" cy="62" r="22" fill="#fff6d9"/><circle cx="914" cy="56" r="20" fill="url(#sky)" opacity=".9"/>')
+        parts.append(f'<circle cx="{W - 95}" cy="62" r="22" fill="#fff6d9"/><circle cx="{W - 86}" cy="56" r="20" fill="url(#sky)" opacity=".9"/>')
         parts.append('<line class="shoot" x1="0" y1="0" x2="70" y2="22" stroke="url(#shoot)" stroke-width="2" stroke-linecap="round"/>')
     else:
-        parts.append('<circle cx="905" cy="62" r="26" fill="#fff2d6"/><circle cx="905" cy="62" r="40" fill="#fff2d6" opacity=".35"/>')
-        for cx, cy, sc in [(140, 60, 1), (330, 40, .7), (700, 70, .85)]:
+        parts.append(f'<circle cx="{W - 95}" cy="62" r="26" fill="#fff2d6"/><circle cx="{W - 95}" cy="62" r="40" fill="#fff2d6" opacity=".35"/>')
+        for cx, cy, sc in ([(140, 60, 1), (330, 40, .7), (700, 70, .85)] if not mobile else [(120, 130, .8), (330, 150, .6)]):
             parts.append(f'<g class="cloud" opacity=".85" transform="translate({cx},{cy}) scale({sc})"><ellipse cx="0" cy="0" rx="34" ry="12" fill="#fff"/>'
                          f'<ellipse cx="18" cy="-8" rx="20" ry="13" fill="#fff"/><ellipse cx="-14" cy="-6" rx="16" ry="10" fill="#fff"/></g>')
 
@@ -145,6 +147,11 @@ def skyline(data, theme):
         return f'<polygon{cls} points="{" ".join(f"{x:.1f},{y:.1f}" for x, y in pts)}" fill="{fill}"/>'
 
     plate = [P(-0.5, -0.5), P(weeks + 0.5, -0.5), P(weeks + 0.5, 7.5), P(-0.5, 7.5)]
+    if mobile:  # fit the city into the narrower picture: scale it and move it below the title
+        x0, x1 = min(q[0] for q in plate), max(q[0] for q in plate)
+        y0, y1 = min(q[1] for q in plate) - 110, max(q[1] for q in plate)
+        sc = (W - 36) / (x1 - x0)
+        parts.append(f'<g transform="translate({18 - x0 * sc:.1f} {118 + (250 - (y1 - y0) * sc) / 2 - y0 * sc:.1f}) scale({sc:.4f})">')
     parts.append(f'<polygon points="{" ".join(f"{x:.1f},{y:.1f}" for x, y in plate)}" fill="{t["ground"]}" stroke="{t["stroke"]}"/>')
     g0 = 0.12  # gap between buildings, in tiles
     order = sorted(((i, j) for i in range(weeks) for j in range(7) if i * 7 + j < len(cells) and cells[i * 7 + j]),
@@ -176,18 +183,26 @@ def skyline(data, theme):
                 g.append(poly(pts, t['window'], ' class="win"' if (i + r + j) % 5 == 0 else ''))
         g.append('</g>')
         parts.append(''.join(g))
+    if mobile:
+        parts.append('</g>')
     s = summarize(data)
     first_d = dt.date.fromisoformat(days[0][0]).strftime('%b %Y')
     last_d = dt.date.fromisoformat(days[-1][0]).strftime('%b %Y')
-    parts.append(f'<text x="34" y="44" font-family="{FONT}" font-size="20" font-weight="700" fill="{t["text"]}">My year in commits</text>')
-    parts.append(f'<text x="34" y="68" font-family="{FONT}" font-size="13" fill="{t["muted"]}">one building per day · taller = busier · {first_d} – {last_d}</text>')
-    parts.append(f'<text x="34" y="{H - 26}" font-family="{MONO}" font-size="13" fill="{t["muted"]}">{s["total"]} contributions · {s["active"]} active days · longest streak {s["longest"]} days</text>')
-    # legend
-    lx = W - 220
-    parts.append(f'<text x="{lx - 40}" y="{H - 26}" font-family="{FONT}" font-size="12" fill="{t["muted"]}" text-anchor="end">less</text>')
-    for k, col in enumerate([t['empty']] + t['levels']):
-        parts.append(f'<rect x="{lx - 30 + k * 18}" y="{H - 38}" width="13" height="13" rx="3" fill="{col}"/>')
-    parts.append(f'<text x="{lx - 30 + 6 * 18 + 4}" y="{H - 26}" font-family="{FONT}" font-size="12" fill="{t["muted"]}">more</text>')
+    if mobile:
+        parts.append(f'<text x="28" y="52" font-family="{FONT}" font-size="30" font-weight="700" fill="{t["text"]}">My year in commits</text>')
+        parts.append(f'<text x="28" y="84" font-family="{FONT}" font-size="19" fill="{t["muted"]}">one building per day · taller = busier</text>')
+        parts.append(f'<text x="28" y="{H - 66}" font-family="{MONO}" font-size="19" fill="{t["text"]}">{s["total"]} contributions · {s["active"]} active days</text>')
+        parts.append(f'<text x="28" y="{H - 34}" font-family="{MONO}" font-size="19" fill="{t["muted"]}">longest streak {s["longest"]} days · {first_d} – {last_d}</text>')
+    else:
+        parts.append(f'<text x="34" y="44" font-family="{FONT}" font-size="20" font-weight="700" fill="{t["text"]}">My year in commits</text>')
+        parts.append(f'<text x="34" y="68" font-family="{FONT}" font-size="13" fill="{t["muted"]}">one building per day · taller = busier · {first_d} – {last_d}</text>')
+        parts.append(f'<text x="34" y="{H - 26}" font-family="{MONO}" font-size="13" fill="{t["muted"]}">{s["total"]} contributions · {s["active"]} active days · longest streak {s["longest"]} days</text>')
+        # legend
+        lx = W - 220
+        parts.append(f'<text x="{lx - 40}" y="{H - 26}" font-family="{FONT}" font-size="12" fill="{t["muted"]}" text-anchor="end">less</text>')
+        for k, col in enumerate([t['empty']] + t['levels']):
+            parts.append(f'<rect x="{lx - 30 + k * 18}" y="{H - 38}" width="13" height="13" rx="3" fill="{col}"/>')
+        parts.append(f'<text x="{lx - 30 + 6 * 18 + 4}" y="{H - 26}" font-family="{FONT}" font-size="12" fill="{t["muted"]}">more</text>')
     style = """
   .bld{animation:rise 1s cubic-bezier(.2,.8,.2,1) both}
   @keyframes rise{from{transform:translateY(34px)}to{transform:none}}
@@ -208,10 +223,11 @@ def skyline(data, theme):
 
 
 # ------------------------------------------------------------------ stats card
-def stats(data, theme, langs):
+def stats(data, theme, langs, mobile=False):
+    """Numbers and languages. The phone version stacks them: a 2 x 2 grid of numbers, then the donut."""
     t = THEMES[theme]
     s = summarize(data)
-    W, H = 1000, 230
+    W, H = (600, 720) if mobile else (1000, 230)
     best = s['best']
     best_txt = dt.date.fromisoformat(best[0]).strftime('%d %b %Y') if best[0] else '—'
     tiles = [(str(s['total']), 'contributions', 'last 12 months'),
@@ -219,33 +235,50 @@ def stats(data, theme, langs):
              (str(s['longest']), 'day streak', 'longest'),
              (str(best[1]), 'in one day', best_txt)]
     p = [f'<rect x=".5" y=".5" width="{W - 1}" height="{H - 1}" rx="18" fill="{t["card"]}" stroke="{t["stroke"]}"/>']
+    # (x, y of the big number, font sizes): one row of four on a computer, a 2 x 2 grid on a phone
+    if mobile:
+        spots = [(36, 130), (316, 130), (36, 270), (316, 270)]
+        fs = (64, 21, 18, 34, 24)
+    else:
+        spots = [(30 + k * 140, 92) for k in range(4)]
+        fs = (44, 14, 12, 28, 20)
     for k, (big, lab, sub) in enumerate(tiles):
-        x = 30 + k * 140
+        x, y = spots[k]
         p.append(f'<g class="fade" style="animation-delay:{0.15 * k:.2f}s">'
-                 f'<text x="{x}" y="92" font-family="{FONT}" font-size="44" font-weight="800" fill="url(#g{theme})">{escape(big)}</text>'
-                 f'<text x="{x}" y="120" font-family="{FONT}" font-size="14" font-weight="600" fill="{t["text"]}">{escape(lab)}</text>'
-                 f'<text x="{x}" y="140" font-family="{FONT}" font-size="12" fill="{t["muted"]}">{escape(sub)}</text></g>')
-    p.append(f'<text x="30" y="46" font-family="{FONT}" font-size="15" font-weight="700" fill="{t["muted"]}" letter-spacing="2">IN NUMBERS</text>')
-    p.append(f'<text x="30" y="196" font-family="{MONO}" font-size="12" fill="{t["muted"]}">{data["repos"]} repositor{"y" if data["repos"] == 1 else "ies"} · {data["stars"]} star{"" if data["stars"] == 1 else "s"} · {data["followers"]} follower{"" if data["followers"] == 1 else "s"} · refreshed {dt.date.today():%d %b %Y}</text>')
+                 f'<text x="{x}" y="{y}" font-family="{FONT}" font-size="{fs[0]}" font-weight="800" fill="url(#g{theme})">{escape(big)}</text>'
+                 f'<text x="{x}" y="{y + fs[3]}" font-family="{FONT}" font-size="{fs[1]}" font-weight="600" fill="{t["text"]}">{escape(lab)}</text>'
+                 f'<text x="{x}" y="{y + fs[3] + fs[4]}" font-family="{FONT}" font-size="{fs[2]}" fill="{t["muted"]}">{escape(sub)}</text></g>')
+    p.append(f'<text x="{36 if mobile else 30}" y="{56 if mobile else 46}" font-family="{FONT}" font-size="{21 if mobile else 15}" font-weight="700" fill="{t["muted"]}" letter-spacing="2">IN NUMBERS</text>')
+    foot = (f'{data["repos"]} repositor{"y" if data["repos"] == 1 else "ies"} · {data["stars"]} star{"" if data["stars"] == 1 else "s"} · '
+            f'{data["followers"]} follower{"" if data["followers"] == 1 else "s"}')
+    if mobile:
+        p.append(f'<text x="36" y="{H - 58}" font-family="{MONO}" font-size="17" fill="{t["muted"]}">{foot}</text>'
+                 f'<text x="36" y="{H - 32}" font-family="{MONO}" font-size="17" fill="{t["muted"]}">refreshed {dt.date.today():%d %b %Y}</text>')
+    else:
+        p.append(f'<text x="30" y="196" font-family="{MONO}" font-size="12" fill="{t["muted"]}">{foot} · refreshed {dt.date.today():%d %b %Y}</text>')
     # language donut
     items = sorted(langs.items(), key=lambda kv: -kv[1][0])[:6]
     tot = sum(v[0] for _, v in items) or 1
-    cx, cy, r = 690, 128, 58
+    cx, cy, r = (138, 494, 80) if mobile else (690, 128, 58)
+    sw = 24 if mobile else 18
     circ = 2 * math.pi * r
     off = 0
-    p.append(f'<text x="600" y="46" font-family="{FONT}" font-size="15" font-weight="700" fill="{t["muted"]}" letter-spacing="2">LANGUAGES · ALL PROJECTS</text>')
-    p.append(f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{t["empty"]}" stroke-width="18"/>')
+    p.append(f'<text x="{36 if mobile else 600}" y="{368 if mobile else 46}" font-family="{FONT}" font-size="{21 if mobile else 15}" font-weight="700" fill="{t["muted"]}" letter-spacing="2">LANGUAGES · ALL PROJECTS</text>')
+    p.append(f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{t["empty"]}" stroke-width="{sw}"/>')
     for k, (name, (size, color)) in enumerate(items):
         color = LANG_COLORS.get(name, EXTRA[k % len(EXTRA)])
         frac = size / tot
         L = frac * circ
         p.append(f'<circle class="arc" style="animation-delay:{0.2 + 0.15 * k:.2f}s;--L:{L:.1f}" cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{color}" '
-                 f'stroke-width="18" stroke-dasharray="{L:.1f} {circ:.1f}" stroke-dashoffset="{-off:.1f}" transform="rotate(-90 {cx} {cy})"/>')
+                 f'stroke-width="{sw}" stroke-dasharray="{L:.1f} {circ:.1f}" stroke-dashoffset="{-off:.1f}" transform="rotate(-90 {cx} {cy})"/>')
         off += L
-        y = 64 + k * 24
-        p.append(f'<g class="fade" style="animation-delay:{0.3 + 0.12 * k:.2f}s"><rect x="790" y="{y}" width="12" height="12" rx="3" fill="{color}"/>'
-                 f'<text x="810" y="{y + 11}" font-family="{FONT}" font-size="13" fill="{t["text"]}">{escape(name)}</text>'
-                 f'<text x="970" y="{y + 11}" font-family="{MONO}" font-size="12" fill="{t["muted"]}" text-anchor="end">{frac * 100:.1f}%</text></g>')
+        if mobile:
+            y, lx, rx_, sq, f1, f2 = 400 + k * 34, 268, 564, 17, 20, 18
+        else:
+            y, lx, rx_, sq, f1, f2 = 64 + k * 24, 790, 970, 12, 13, 12
+        p.append(f'<g class="fade" style="animation-delay:{0.3 + 0.12 * k:.2f}s"><rect x="{lx}" y="{y}" width="{sq}" height="{sq}" rx="3" fill="{color}"/>'
+                 f'<text x="{lx + sq + 10}" y="{y + sq - 1}" font-family="{FONT}" font-size="{f1}" fill="{t["text"]}">{escape(name)}</text>'
+                 f'<text x="{rx_}" y="{y + sq - 1}" font-family="{MONO}" font-size="{f2}" fill="{t["muted"]}" text-anchor="end">{frac * 100:.1f}%</text></g>')
     style = """
   .fade{animation:fade .9s ease-out both}
   @keyframes fade{from{transform:translateY(10px)}to{transform:none}}
@@ -280,8 +313,9 @@ def main():
             langs[k] = list(v)
     os.makedirs(OUT, exist_ok=True)
     for th in THEMES:
-        open(os.path.join(OUT, f'skyline-{th}.svg'), 'w').write(skyline(data, th))
-        open(os.path.join(OUT, f'stats-{th}.svg'), 'w').write(stats(data, th, langs))
+        for m, tag in ((False, ''), (True, '-mobile')):   # -mobile: the phone versions
+            open(os.path.join(OUT, f'skyline{tag}-{th}.svg'), 'w').write(skyline(data, th, m))
+            open(os.path.join(OUT, f'stats{tag}-{th}.svg'), 'w').write(stats(data, th, langs, m))
     print('total', summarize(data))
 
 
