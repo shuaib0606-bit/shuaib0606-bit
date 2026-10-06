@@ -24,14 +24,19 @@ OUT = os.path.join(ROOT, 'assets', 'generated')
 FONT = "'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif"
 MONO = "ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace"
 
+# CampusConnect's own colours: terracotta primary ramp, app surfaces, and the landing scene's night/day sky.
 THEMES = {
-    'dark': dict(bg1='#070b1f', bg2='#151a3d', text='#e6e9ff', muted='#8d93c9', empty='#1b2145', emptyL='#232a56',
-                 emptyR='#141a39', ground='#0f1430', accent='#ff8a3d', accent2='#7c5cff', window='#ffd27a',
-                 card='#0d1230', stroke='#2a3170', levels=['#3b2f8f', '#5a3fd0', '#7c5cff', '#b06bff', '#ff8a3d']),
-    'light': dict(bg1='#dff1ff', bg2='#fff6ec', text='#1d2440', muted='#5b6488', empty='#e7ebf5', emptyL='#d5dbea',
-                  emptyR='#c8cfe2', ground='#eef2fa', accent='#f26b1d', accent2='#5b3fd0', window='#fff3c4',
-                  card='#ffffff', stroke='#d9def0', levels=['#c9c1ff', '#9d8bff', '#7c5cff', '#f39a5b', '#f26b1d']),
+    'dark': dict(bg1='#080d20', bg2='#1e2d55', text='#f4f5f7', muted='#a6aab3', empty='#1e1e23', emptyL='#161619',
+                 emptyR='#101014', ground='#101014', accent='#eda183', accent2='#c15f3c', window='#ffd9a8',
+                 card='#161619', stroke='#292930', levels=['#5b2a1c', '#8a3d26', '#c15f3c', '#dc7a56', '#eda183']),
+    'light': dict(bg1='#8fb8e6', bg2='#fbfaf8', text='#1b1815', muted='#7a6d60', empty='#efece9', emptyL='#ded8d2',
+                  emptyR='#c2b8ae', ground='#fbfaf8', accent='#dc7a56', accent2='#a84c2e', window='#fffdf8',
+                  card='#ffffff', stroke='#efece9', levels=['#f5c7b3', '#eda183', '#dc7a56', '#c15f3c', '#8a3d26']),
 }
+# Languages are drawn in the project's palette rather than GitHub's default colours.
+LANG_COLORS = {'PHP': '#c15f3c', 'JavaScript': '#eda183', 'Blade': '#8a3d26', 'Python': '#5b8fd6',
+               'CSS': '#8bb254', 'Shell': '#b48aa8', 'TypeScript': '#2f6fc4', 'HTML': '#dc7a56'}
+EXTRA = ['#9c8f82', '#4c7a33', '#96708c', '#f5c7b3']
 
 QUERY = """query($login:String!){ user(login:$login){ createdAt followers{totalCount}
   repositories(ownerAffiliations:OWNER, isFork:false, first:100){ totalCount nodes{ name stargazerCount
@@ -127,7 +132,7 @@ def skyline(data, theme):
         parts.append('<circle cx="905" cy="62" r="22" fill="#fff6d9"/><circle cx="914" cy="56" r="20" fill="url(#sky)" opacity=".9"/>')
         parts.append('<line class="shoot" x1="0" y1="0" x2="70" y2="22" stroke="url(#shoot)" stroke-width="2" stroke-linecap="round"/>')
     else:
-        parts.append('<circle cx="905" cy="62" r="26" fill="#ffd27a" opacity=".9"/><circle cx="905" cy="62" r="40" fill="#ffd27a" opacity=".18"/>')
+        parts.append('<circle cx="905" cy="62" r="26" fill="#fff2d6"/><circle cx="905" cy="62" r="40" fill="#fff2d6" opacity=".35"/>')
         for cx, cy, sc in [(140, 60, 1), (330, 40, .7), (700, 70, .85)]:
             parts.append(f'<g class="cloud" opacity=".85" transform="translate({cx},{cy}) scale({sc})"><ellipse cx="0" cy="0" rx="34" ry="12" fill="#fff"/>'
                          f'<ellipse cx="18" cy="-8" rx="20" ry="13" fill="#fff"/><ellipse cx="-14" cy="-6" rx="16" ry="10" fill="#fff"/></g>')
@@ -230,6 +235,7 @@ def stats(data, theme, langs):
     p.append(f'<text x="600" y="46" font-family="{FONT}" font-size="15" font-weight="700" fill="{t["muted"]}" letter-spacing="2">LANGUAGES</text>')
     p.append(f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{t["empty"]}" stroke-width="18"/>')
     for k, (name, (size, color)) in enumerate(items):
+        color = LANG_COLORS.get(name, EXTRA[k % len(EXTRA)])
         frac = size / tot
         L = frac * circ
         p.append(f'<circle class="arc" style="animation-delay:{0.2 + 0.15 * k:.2f}s;--L:{L:.1f}" cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{color}" '

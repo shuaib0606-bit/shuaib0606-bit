@@ -12,11 +12,15 @@ FONT = "'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helveti
 MONO = "ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace"
 NAME = 'Sindeed Shuaib Arpon'
 
+# Colours from UIU CampusConnect itself: the terracotta primary ramp and the surfaces/ink of app.css,
+# plus the 3D landing scene's sky, grass and night city glow (resources/js/landing/palette.js).
 TH = {
-    'dark': dict(s1='#060a1c', s2='#14123a', s3='#2a1550', text='#f2f3ff', muted='#9aa0d6', a1='#7c5cff', a2='#ff8a3d', a3='#2ee6c5',
-                 bld='#0e1233', bld2='#151a45', win='#ffd27a', card='#0b1030', stroke='#2a3170', chip='#161c48', node='#121842'),
-    'light': dict(s1='#cfe9ff', s2='#eaf4ff', s3='#fff1e3', text='#151a33', muted='#56607f', a1='#5b3fd0', a2='#f26b1d', a3='#0aa58a',
-                  bld='#c9d3ea', bld2='#b7c2de', win='#fff6cf', card='#ffffff', stroke='#d9def0', chip='#f1f3fb', node='#f6f7fd'),
+    'dark': dict(s1='#080d20', s2='#1e2d55', s3='#3a2416', text='#f4f5f7', muted='#a6aab3',
+                 a1='#c15f3c', a2='#eda183', a3='#5b8fd6', a4='#8bb254', a5='#b48aa8',
+                 bld='#161619', bld2='#1e1e23', win='#ffd9a8', card='#161619', stroke='#292930', chip='#1e1e23', node='#1e1e23'),
+    'light': dict(s1='#8fb8e6', s2='#cfe3f4', s3='#fbfaf8', text='#1b1815', muted='#7a6d60',
+                  a1='#a84c2e', a2='#dc7a56', a3='#2f6fc4', a4='#4c7a33', a5='#96708c',
+                  bld='#c9c6bd', bld2='#b9b6ab', win='#fffdf8', card='#ffffff', stroke='#efece9', chip='#fdf4f0', node='#fbfaf8'),
 }
 REDUCED = '@media (prefers-reduced-motion:reduce){*{animation:none!important}}'
 
@@ -51,7 +55,7 @@ def header(theme):
             b.append(f'<circle class="tw" style="animation-delay:{rnd.uniform(0, 5):.2f}s" cx="{x:.1f}" cy="{y:.1f}" r="{r}" fill="#fff"/>')
         b.append('<line class="shoot" x1="0" y1="0" x2="90" y2="26" stroke="#fff" stroke-width="2" stroke-linecap="round"/>')
     else:
-        b.append(f'<circle cx="880" cy="70" r="34" fill="#ffd27a"/><circle class="halo" cx="880" cy="70" r="54" fill="#ffd27a" opacity=".22"/>')
+        b.append(f'<circle cx="880" cy="70" r="34" fill="#fff2d6"/><circle class="halo" cx="880" cy="70" r="54" fill="#fff2d6" opacity=".35"/>')
         for cx, cy, s in [(120, 70, 1.1), (420, 46, .8), (650, 90, .9)]:
             b.append(f'<g class="cloud" transform="translate({cx},{cy}) scale({s})" opacity=".9"><ellipse rx="40" ry="13" fill="#fff"/>'
                      f'<ellipse cx="20" cy="-9" rx="24" ry="15" fill="#fff"/><ellipse cx="-16" cy="-7" rx="18" ry="11" fill="#fff"/></g>')
@@ -140,29 +144,29 @@ def terminal():
              ('$ ', 'ls stack/', None),
              ('', None, 'laravel  php  mysql  react  inertia  tailwind  alpine  three.js  python  selenium'),
              ]
-    b = [f'<rect x=".5" y=".5" width="{W - 1}" height="{H - 1}" rx="16" fill="#0b0f1e" stroke="#262c4f"/>',
-         '<rect x=".5" y=".5" width="999" height="40" rx="16" fill="#121831"/><rect x=".5" y="24" width="999" height="17" fill="#121831"/>',
+    b = [f'<rect x=".5" y=".5" width="{W - 1}" height="{H - 1}" rx="16" fill="#0c0c0f" stroke="#292930"/>',
+         '<rect x=".5" y=".5" width="999" height="40" rx="16" fill="#161619"/><rect x=".5" y="24" width="999" height="17" fill="#161619"/>',
          '<circle cx="26" cy="21" r="6.5" fill="#ff5f57"/><circle cx="48" cy="21" r="6.5" fill="#febc2e"/><circle cx="70" cy="21" r="6.5" fill="#28c840"/>',
-         f'<text x="500" y="26" font-family="{FONT}" font-size="13" fill="#7d84b5" text-anchor="middle">arpon@uiu — ~/campusconnect</text>']
+         f'<text x="500" y="26" font-family="{FONT}" font-size="13" fill="#858a94" text-anchor="middle">arpon@uiu — ~/campusconnect</text>']
     cw, y, t = 9.6, 76, 0.4
     for k, (prompt, cmd, out) in enumerate(lines):
         if cmd is not None:
             n = len(cmd)
             dur = 0.05 * n + 0.2
-            b.append(f'<text class="ln" style="animation-delay:{t:.2f}s" x="28" y="{y}" font-family="{MONO}" font-size="16" fill="#2ee6c5">{escape(prompt.strip())}</text>')
+            b.append(f'<text class="ln" style="animation-delay:{t:.2f}s" x="28" y="{y}" font-family="{MONO}" font-size="16" fill="#dc7a56">{escape(prompt.strip())}</text>')
             b.append(f'<clipPath id="t{k}"><rect x="44" y="{y - 16}" height="22" width="0">'
                      f'<animate attributeName="width" from="0" to="{n * cw + 4:.0f}" begin="{t + .2:.2f}s" dur="{dur:.2f}s" fill="freeze" calcMode="discrete" '
                      f'values="{";".join(str(int(c * cw + 2)) for c in range(n + 1))}"/></rect></clipPath>')
-            b.append(f'<text clip-path="url(#t{k})" x="46" y="{y}" font-family="{MONO}" font-size="16" fill="#e8eaff" textLength="{n * cw:.0f}" lengthAdjust="spacingAndGlyphs">{escape(cmd)}</text>')
+            b.append(f'<text clip-path="url(#t{k})" x="46" y="{y}" font-family="{MONO}" font-size="16" fill="#f4f5f7" textLength="{n * cw:.0f}" lengthAdjust="spacingAndGlyphs">{escape(cmd)}</text>')
             t += dur + .45
         else:
-            col = '#ffb47a' if out.startswith('223 ') else '#a9b0e0'
+            col = '#eda183' if out.startswith('223 ') else '#a6aab3'
             b.append(f'<text class="ln" style="animation-delay:{t:.2f}s" x="46" y="{y}" font-family="{MONO}" font-size="15" fill="{col}">{escape(out)}</text>')
             t += .35
             y += 10
         y += 26
-    b.append(f'<text class="ln" style="animation-delay:{t:.2f}s" x="28" y="{y}" font-family="{MONO}" font-size="16" fill="#2ee6c5">$</text>')
-    b.append(f'<rect class="blink" style="animation-delay:{t:.2f}s" x="46" y="{y - 15}" width="10" height="19" fill="#e8eaff"/>')
+    b.append(f'<text class="ln" style="animation-delay:{t:.2f}s" x="28" y="{y}" font-family="{MONO}" font-size="16" fill="#dc7a56">$</text>')
+    b.append(f'<rect class="blink" style="animation-delay:{t:.2f}s" x="46" y="{y - 15}" width="10" height="19" fill="#f4f5f7"/>')
     style = """
 .ln{opacity:0;animation:ln .25s ease-out forwards}@keyframes ln{to{opacity:1}}
 .blink{opacity:0;animation:blink 1s steps(1) infinite}@keyframes blink{0%{opacity:1}50%{opacity:0}}
@@ -183,7 +187,7 @@ def project(theme):
     b.append(f'<text x="40" y="94" font-family="{FONT}" font-size="36" font-weight="800" fill="{t["text"]}">UIU CampusConnect</text>')
     b.append(f'<text x="40" y="126" font-family="{FONT}" font-size="16" fill="{t["muted"]}">Every trimester, UIU&#8217;s open credit system scatters students into new sections with new faces.</text>')
     b.append(f'<text x="40" y="148" font-family="{FONT}" font-size="16" fill="{t["muted"]}">CampusConnect gives the whole university one verified home: classes, people, notices and campus life.</text>')
-    roles = [('Student', t['a1']), ('Faculty', t['a3']), ('Registrar', t['a2']), ('Admin', '#e5484d')]
+    roles = [('Student', t['a1']), ('Faculty', t['a3']), ('Registrar', t['a4']), ('Admin', t['a5'])]
     x = 40
     for k, (r, c) in enumerate(roles):
         w = len(r) * 8.2 + 34
@@ -196,16 +200,16 @@ def project(theme):
                 f'<text x="{x + w / 2}" y="{y + 26}" font-family="{FONT}" font-size="15" font-weight="700" fill="{t["text"]}" text-anchor="middle">{escape(title)}</text>'
                 + ''.join(f'<text x="{x + w / 2}" y="{y + 46 + i * 17}" font-family="{FONT}" font-size="12" fill="{t["muted"]}" text-anchor="middle">{escape(s)}</text>' for i, s in enumerate(sub))
                 + '</g>')
-    b.append(node(40, 222, 230, 110, 'Browser', ['Blade + Alpine.js', 'React 19 via Inertia', 'Three.js 3D campus'], t['a1']))
-    b.append(node(370, 222, 260, 110, 'Laravel 13 · PHP 8.3', ['routes → middleware → controllers', 'SocialRules · Notifier · GroupSync', 'Filament admin panel'], t['a2']))
-    b.append(node(730, 222, 230, 110, 'MySQL', ['67 tables · 50 migrations', 'public + private file storage', ''], t['a3']))
-    b.append(node(370, 372, 260, 76, 'Campus assistant (AI)', ['tools scoped to the signed-in user'], '#e5484d'))
-    b.append(node(40, 372, 230, 76, 'Laravel Reverb', ['websocket class chat'], t['a1']))
-    b.append(node(730, 372, 230, 76, 'LLM providers', ['Groq · OpenRouter · Gemini …'], t['a3']))
-    paths = [('M270,262 L370,262', t['a1'], 0), ('M370,292 L270,292', t['a2'], 1.0),
-             ('M630,262 L730,262', t['a2'], .5), ('M730,292 L630,292', t['a3'], 1.5),
-             ('M155,332 L155,372', t['a1'], .8), ('M500,332 L500,372', '#e5484d', .3),
-             ('M630,410 L730,410', '#e5484d', 1.2)]
+    b.append(node(40, 222, 230, 110, 'Browser', ['Blade + Alpine.js', 'React 19 via Inertia', 'Three.js 3D campus'], t['a3']))
+    b.append(node(370, 222, 260, 110, 'Laravel 13 · PHP 8.3', ['routes → middleware → controllers', 'SocialRules · Notifier · GroupSync', 'Filament admin panel'], t['a1']))
+    b.append(node(730, 222, 230, 110, 'MySQL', ['67 tables · 50 migrations', 'public + private file storage', ''], t['a4']))
+    b.append(node(370, 372, 260, 76, 'Campus assistant (AI)', ['tools scoped to the signed-in user'], t['a5']))
+    b.append(node(40, 372, 230, 76, 'Laravel Reverb', ['websocket class chat'], t['a3']))
+    b.append(node(730, 372, 230, 76, 'LLM providers', ['Groq · OpenRouter · Gemini …'], t['a5']))
+    paths = [('M270,262 L370,262', t['a3'], 0), ('M370,292 L270,292', t['a1'], 1.0),
+             ('M630,262 L730,262', t['a1'], .5), ('M730,292 L630,292', t['a4'], 1.5),
+             ('M155,332 L155,372', t['a3'], .8), ('M500,332 L500,372', t['a5'], .3),
+             ('M630,410 L730,410', t['a5'], 1.2)]
     for d, c, beg in paths:
         b.append(f'<path d="{d}" stroke="{t["muted"]}" stroke-opacity=".5" stroke-width="1.6" stroke-dasharray="4 4" fill="none" marker-end="url(#ah)"/>')
         b.append(f'<circle r="4.5" fill="{c}"><animateMotion dur="2s" begin="{beg}s" repeatCount="indefinite" path="{d}"/>'
@@ -232,9 +236,9 @@ def footer(theme):
         pts = ' '.join(f'{x},{y + amp * (1 if (x // 125 + ph) % 2 else -1)}' for x in range(-250, 1251, 125))
         d = f'M-250,{y} ' + ' '.join(f'Q{x - 62},{y + amp * (1 if (x // 125 + ph) % 2 else -1)} {x},{y}' for x in range(-125, 1376, 125)) + f' L1375,{H} L-250,{H} Z'
         return d
-    b = [f'<path class="w1" d="{wave(14, 70, 0)}" fill="{t["a1"]}" opacity=".35"/>',
-         f'<path class="w2" d="{wave(12, 84, 1)}" fill="{t["a2"]}" opacity=".35"/>',
-         f'<path class="w3" d="{wave(10, 98, 0)}" fill="{t["a1"]}" opacity=".55"/>',
+    b = [f'<path class="w1" d="{wave(14, 70, 0)}" fill="{t["a2"]}" opacity=".35"/>',
+         f'<path class="w2" d="{wave(12, 84, 1)}" fill="{t["a1"]}" opacity=".45"/>',
+         f'<path class="w3" d="{wave(10, 98, 0)}" fill="{t["a1"]}" opacity=".85"/>',
          f'<text x="500" y="44" font-family="{FONT}" font-size="15" font-weight="600" fill="{t["muted"]}" text-anchor="middle">thanks for stopping by ✦ every graphic here is hand-made SVG</text>']
     style = """
 .w1{animation:w 9s ease-in-out infinite alternate}.w2{animation:w 7s ease-in-out infinite alternate-reverse}.w3{animation:w 11s ease-in-out infinite alternate}
