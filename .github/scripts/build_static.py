@@ -22,6 +22,11 @@ TH = {
                   a1='#a84c2e', a2='#dc7a56', a3='#2f6fc4', a4='#4c7a33', a5='#96708c',
                   bld='#c9c6bd', bld2='#b9b6ab', win='#fffdf8', card='#ffffff', stroke='#efece9', chip='#fdf4f0', node='#fbfaf8'),
 }
+# Terminal colours: the app's dark surfaces, and its warm light surfaces and ink.
+TERM = {
+    'dark': dict(bg='#0c0c0f', bar='#161619', line='#292930', muted='#858a94', prompt='#dc7a56', cmd='#f4f5f7', out='#a6aab3', hi='#eda183'),
+    'light': dict(bg='#fbfaf8', bar='#efece9', line='#ded8d2', muted='#7a6d60', prompt='#a84c2e', cmd='#1b1815', out='#5e5347', hi='#a84c2e'),
+}
 REDUCED = '@media (prefers-reduced-motion:reduce){*{animation:none!important}}'
 
 
@@ -120,8 +125,9 @@ def header(theme):
 
 
 # ------------------------------------------------------------------ terminal
-def terminal():
+def terminal(theme='dark'):
     W, H = 1000, 352
+    T = TERM[theme]
     lines = [('$ ', 'whoami', None),
              ('', None, 'Sindeed Shuaib Arpon · CSE undergrad at United International University, Dhaka'),
              ('$ ', 'cat now.md', None),
@@ -131,29 +137,29 @@ def terminal():
              ('$ ', 'ls ~/projects', None),
              ('', None, 'uiu-campusconnect   gen-z-gamers-pro   student-records   java-oop-labs'),
              ]
-    b = [f'<rect x=".5" y=".5" width="{W - 1}" height="{H - 1}" rx="16" fill="#0c0c0f" stroke="#292930"/>',
-         '<rect x=".5" y=".5" width="999" height="40" rx="16" fill="#161619"/><rect x=".5" y="24" width="999" height="17" fill="#161619"/>',
+    b = [f'<rect x=".5" y=".5" width="{W - 1}" height="{H - 1}" rx="16" fill="{T["bg"]}" stroke="{T["line"]}"/>',
+         f'<rect x=".5" y=".5" width="999" height="40" rx="16" fill="{T["bar"]}"/><rect x=".5" y="24" width="999" height="17" fill="{T["bar"]}"/>',
          '<circle cx="26" cy="21" r="6.5" fill="#ff5f57"/><circle cx="48" cy="21" r="6.5" fill="#febc2e"/><circle cx="70" cy="21" r="6.5" fill="#28c840"/>',
-         f'<text x="500" y="26" font-family="{FONT}" font-size="13" fill="#858a94" text-anchor="middle">arpon@uiu — ~/campusconnect</text>']
+         f'<text x="500" y="26" font-family="{FONT}" font-size="13" fill="{T["muted"]}" text-anchor="middle">arpon@uiu — ~/campusconnect</text>']
     cw, y, t = 9.6, 76, 0.4
     for k, (prompt, cmd, out) in enumerate(lines):
         if cmd is not None:
             n = len(cmd)
             dur = 0.05 * n + 0.2
-            b.append(f'<text class="ln" style="animation-delay:{t:.2f}s" x="28" y="{y}" font-family="{MONO}" font-size="16" fill="#dc7a56">{escape(prompt.strip())}</text>')
+            b.append(f'<text class="ln" style="animation-delay:{t:.2f}s" x="28" y="{y}" font-family="{MONO}" font-size="16" fill="{T["prompt"]}">{escape(prompt.strip())}</text>')
             b.append(f'<clipPath id="t{k}"><rect x="44" y="{y - 16}" height="22" width="0">'
                      f'<animate attributeName="width" from="0" to="{n * cw + 4:.0f}" begin="{t + .2:.2f}s" dur="{dur:.2f}s" fill="freeze" calcMode="discrete" '
                      f'values="{";".join(str(int(c * cw + 2)) for c in range(n + 1))}"/></rect></clipPath>')
-            b.append(f'<text clip-path="url(#t{k})" x="46" y="{y}" font-family="{MONO}" font-size="16" fill="#f4f5f7" textLength="{n * cw:.0f}" lengthAdjust="spacingAndGlyphs">{escape(cmd)}</text>')
+            b.append(f'<text clip-path="url(#t{k})" x="46" y="{y}" font-family="{MONO}" font-size="16" fill="{T["cmd"]}" textLength="{n * cw:.0f}" lengthAdjust="spacingAndGlyphs">{escape(cmd)}</text>')
             t += dur + .45
         else:
-            col = '#eda183' if out.startswith('223 ') else '#a6aab3'
+            col = T['hi'] if out.startswith('223 ') else T['out']
             b.append(f'<text class="ln" style="animation-delay:{t:.2f}s" x="46" y="{y}" font-family="{MONO}" font-size="15" fill="{col}">{escape(out)}</text>')
             t += .35
             y += 10
         y += 26
-    b.append(f'<text class="ln" style="animation-delay:{t:.2f}s" x="28" y="{y}" font-family="{MONO}" font-size="16" fill="#dc7a56">$</text>')
-    b.append(f'<rect class="blink" style="animation-delay:{t:.2f}s" x="46" y="{y - 15}" width="10" height="19" fill="#f4f5f7"/>')
+    b.append(f'<text class="ln" style="animation-delay:{t:.2f}s" x="28" y="{y}" font-family="{MONO}" font-size="16" fill="{T["prompt"]}">$</text>')
+    b.append(f'<rect class="blink" style="animation-delay:{t:.2f}s" x="46" y="{y - 15}" width="10" height="19" fill="{T["cmd"]}"/>')
     style = """
 .ln{opacity:0;animation:ln .25s ease-out forwards}@keyframes ln{to{opacity:1}}
 .blink{opacity:0;animation:blink 1s steps(1) infinite}@keyframes blink{0%{opacity:1}50%{opacity:0}}
@@ -386,7 +392,8 @@ def main():
     for th in TH:
         open(os.path.join(A, f'header-{th}.svg'), 'w').write(header(th))
         open(os.path.join(A, f'footer-{th}.svg'), 'w').write(footer(th))
-    open(os.path.join(A, 'terminal.svg'), 'w').write(terminal())
+    for th in TH:
+        open(os.path.join(A, f'terminal-{th}.svg'), 'w').write(terminal(th))
     print('ok')
 
 
