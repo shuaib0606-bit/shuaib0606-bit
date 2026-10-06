@@ -25,6 +25,28 @@ TH = {
 REDUCED = '@media (prefers-reduced-motion:reduce){*{animation:none!important}}'
 
 
+# ------------------------------------------------------------------ text as paths (for the quote)
+QUOTE_FONT = os.environ.get('QUOTE_FONT', '/tmp/Lora-Italic-480.ttf')  # Lora Italic (SIL OFL), weight 480
+
+
+def text_path(text, size, x, y, anchor='start'):
+    """Outline `text` in the quote font, so the italic shows without any font loading."""
+    from fontTools.ttLib import TTFont
+    from fontTools.pens.svgPathPen import SVGPathPen
+    from fontTools.pens.transformPen import TransformPen
+    f = TTFont(QUOTE_FONT)
+    cmap, gs, hmtx = f.getBestCmap(), f.getGlyphSet(), f['hmtx']
+    k = size / f['head'].unitsPerEm
+    width = sum(hmtx[cmap.get(ord(c), '.notdef')][0] for c in text) * k
+    cx = x - (width if anchor == 'end' else width / 2 if anchor == 'middle' else 0)
+    pen = SVGPathPen(gs)
+    for c in text:
+        g = cmap.get(ord(c), '.notdef')
+        gs[g].draw(TransformPen(pen, (k, 0, 0, -k, cx, y)))
+        cx += hmtx[g][0] * k
+    return pen.getCommands(), width
+
+
 def svg(w, h, body, style='', defs='', label=''):
     return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}" role="img" aria-label="{escape(label)}">'
             f'<defs>{defs}</defs><style>{style}{REDUCED}</style>{body}</svg>')
@@ -77,46 +99,11 @@ def header(theme):
     # name and subtitle
     b.append(f'<text class="rise" x="60" y="128" font-family="{FONT}" font-size="15" font-weight="700" letter-spacing="4" fill="{t["muted"]}">HI, I&#8217;M</text>')
     b.append(f'<text class="rise" style="animation-delay:.15s" x="56" y="186" font-family="{FONT}" font-size="58" font-weight="800" fill="url(#name)">{NAME}</text>')
-    roles = ['Full-stack developer · Laravel × React',
-             'CSE @ United International University',
-             'Building UIU CampusConnect',
-             'Turning campus chaos into one verified home']
-    cw, fs, x0, y0 = 12.0, 20, 60, 226
-    period = 4.0 * len(roles)
-    for k, r in enumerate(roles):
-        n = len(r)
-        frames, times = [], []
-        start = k * 4.0
-        type_t, hold_t, erase_t = 1.4, 1.8, 0.6
-        frames.append(0); times.append(0.0)
-        if start > 0:
-            frames.append(0); times.append(start)
-        for c in range(1, n + 1):
-            frames.append(c * cw + 2); times.append(start + type_t * c / n)
-        frames.append(n * cw + 2); times.append(start + type_t + hold_t)
-        for c in range(n - 1, -1, -1):
-            frames.append(c * cw + 2); times.append(start + type_t + hold_t + erase_t * (n - c) / n)
-        frames.append(0); times.append(period)
-        kt = ';'.join(f'{v / period:.4f}' for v in times)
-        vals = ';'.join(f'{v:.0f}' for v in frames)
-        b.append(f'<clipPath id="c{k}"><rect x="{x0 - 1}" y="{y0 - 22}" height="30" width="0">'
-                 f'<animate attributeName="width" values="{vals}" keyTimes="{kt}" dur="{period}s" repeatCount="indefinite" calcMode="discrete"/></rect></clipPath>')
-        b.append(f'<text clip-path="url(#c{k})" x="{x0}" y="{y0}" font-family="{MONO}" font-size="{fs}" fill="{t["text"]}" textLength="{n * cw:.0f}" lengthAdjust="spacingAndGlyphs">{escape(r)}</text>')
-        # cursor follows the same frames
-        cvals = ';'.join(f'{x0 + v:.0f}' for v in frames)
-        b.append(f'<rect class="cur" x="{x0}" y="{y0 - 18}" width="10" height="22" fill="{t["a2"]}" opacity="0">'
-                 f'<animate attributeName="x" values="{cvals}" keyTimes="{kt}" dur="{period}s" repeatCount="indefinite" calcMode="discrete"/>'
-                 f'<animate attributeName="opacity" values="0;1;1;0" keyTimes="0;{start / period:.4f};{(start + 4.0) / period - 0.0001:.4f};{min(1, (start + 4.0) / period):.4f}" '
-                 f'dur="{period}s" repeatCount="indefinite" calcMode="discrete"/></rect>')
-    # chips
-    chips = ['Laravel', 'PHP', 'React', 'MySQL', 'Python', 'Java']
-    cx = 60
-    for k, c in enumerate(chips):
-        w = len(c) * 8.4 + 26
-        b.append(f'<g class="rise" style="animation-delay:{.4 + k * .08:.2f}s"><rect x="{cx}" y="246" width="{w:.0f}" height="28" rx="14" '
-                 f'fill="{t["card"]}" fill-opacity=".85" stroke="{t["a1"]}" stroke-opacity=".7"/>'
-                 f'<text x="{cx + w / 2:.0f}" y="265" font-family="{FONT}" font-size="13" font-weight="600" fill="{t["text"]}" text-anchor="middle">{c}</text></g>')
-        cx += w + 10
+    quote = 'The best way to predict the future is to invent it.'
+    d, w = text_path(quote, 25, 60, 232)
+    b.append(f'<path class="rise" style="animation-delay:.35s" d="{d}" fill="{t["text"]}" fill-opacity=".92"/>')
+    d2, w2 = text_path('— Alan Kay', 15, 60 + w, 262, anchor='end')
+    b.append(f'<path class="rise" style="animation-delay:.5s" d="{d2}" fill="{t["a2"] if theme == "dark" else t["a1"]}"/>')
     style = """
 .tw{animation:tw 4s ease-in-out infinite}@keyframes tw{0%,100%{opacity:.9}50%{opacity:.15}}
 .win{animation:win 5s ease-in-out infinite}@keyframes win{0%,100%{opacity:.9}50%{opacity:.1}}
@@ -386,7 +373,7 @@ def footer(theme):
     b = [f'<path class="w1" d="{wave(14, 70, 0)}" fill="{t["a2"]}" opacity=".35"/>',
          f'<path class="w2" d="{wave(12, 84, 1)}" fill="{t["a1"]}" opacity=".45"/>',
          f'<path class="w3" d="{wave(10, 98, 0)}" fill="{t["a1"]}" opacity=".85"/>',
-         f'<text x="500" y="44" font-family="{FONT}" font-size="15" font-weight="600" fill="{t["muted"]}" text-anchor="middle">thanks for stopping by ✦ every graphic here is hand-made SVG</text>']
+         f'<text x="500" y="44" font-family="{FONT}" font-size="15" font-weight="600" fill="{t["muted"]}" text-anchor="middle">thanks for stopping by</text>']
     style = """
 .w1{animation:w 9s ease-in-out infinite alternate}.w2{animation:w 7s ease-in-out infinite alternate-reverse}.w3{animation:w 11s ease-in-out infinite alternate}
 @keyframes w{from{transform:translateX(0)}to{transform:translateX(125px)}}
