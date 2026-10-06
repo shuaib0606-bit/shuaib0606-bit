@@ -44,7 +44,7 @@ def text_path(text, size, x, y, anchor='start'):
     k = size / f['head'].unitsPerEm
     width = sum(hmtx[cmap.get(ord(c), '.notdef')][0] for c in text) * k
     cx = x - (width if anchor == 'end' else width / 2 if anchor == 'middle' else 0)
-    pen = SVGPathPen(gs)
+    pen = SVGPathPen(gs, ntos=lambda v: ('%.1f' % v).rstrip('0').rstrip('.'))
     for c in text:
         g = cmap.get(ord(c), '.notdef')
         gs[g].draw(TransformPen(pen, (k, 0, 0, -k, cx, y)))
@@ -104,11 +104,31 @@ def header(theme):
     # name and subtitle
     b.append(f'<text class="rise" x="60" y="128" font-family="{FONT}" font-size="15" font-weight="700" letter-spacing="4" fill="{t["muted"]}">HI, I&#8217;M</text>')
     b.append(f'<text class="rise" style="animation-delay:.15s" x="56" y="186" font-family="{FONT}" font-size="58" font-weight="800" fill="url(#name)">{NAME}</text>')
-    quote = 'The best way to predict the future is to invent it.'
-    d, w = text_path(quote, 25, 60, 232)
-    b.append(f'<path class="rise" style="animation-delay:.35s" d="{d}" fill="{t["text"]}" fill-opacity=".92"/>')
-    d2, w2 = text_path('— Alan Kay', 15, 60 + w, 262, anchor='end')
-    b.append(f'<path class="rise" style="animation-delay:.5s" d="{d2}" fill="{t["a2"] if theme == "dark" else t["a1"]}"/>')
+    # Quote carousel: one quote every 30 seconds, crossfading. Negative delays start each quote mid-cycle,
+    # so if animation is paused or reduced, only the first quote shows.
+    quotes = [('The best way to predict the future is to invent it.', 'Alan Kay'),
+              ('Simplicity is prerequisite for reliability.', 'Edsger W. Dijkstra'),
+              ('First, solve the problem. Then, write the code.', 'John Johnson'),
+              ('Make it work, make it right, make it fast.', 'Kent Beck'),
+              ('Talk is cheap. Show me the code.', 'Linus Torvalds')]
+    N, SLOT = len(quotes), 30
+    for k, (q, who) in enumerate(quotes):
+        d, w = text_path(q, 25, 60, 232)
+        d2, _ = text_path('— ' + who, 15, 60 + w, 262, anchor='end')
+        delay = -((N - k) % N) * SLOT - 1
+        base = '' if k == 0 else 'opacity:0;'
+        b.append(f'<g class="q" style="{base}animation-delay:{delay}s"><path d="{d}" fill="{t["text"]}" fill-opacity=".92"/>'
+                 f'<path d="{d2}" fill="{t["a2"] if theme == "dark" else t["a1"]}"/></g>')
+    # progress dots under the quote
+    for k in range(N):
+        delay = -((N - k) % N) * SLOT - 1
+        b.append(f'<circle class="qd" style="animation-delay:{delay}s" cx="{64 + k * 14}" cy="257" r="3.2" fill="{t["a1"]}" opacity="{1 if k == 0 else .25}"/>')
+    vis = 100 / N
+    qstyle = (f'.q{{animation:q {N * SLOT}s linear infinite}}'
+              f'@keyframes q{{0%{{opacity:0;transform:translateY(6px)}}.6%{{opacity:1;transform:none}}{vis - .6:.2f}%{{opacity:1;transform:none}}'
+              f'{vis:.2f}%{{opacity:0;transform:translateY(-6px)}}100%{{opacity:0;transform:translateY(-6px)}}}}'
+              f'.qd{{animation:qd {N * SLOT}s linear infinite}}'
+              f'@keyframes qd{{0%{{opacity:.25}}.6%,{vis - .6:.2f}%{{opacity:1}}{vis:.2f}%,100%{{opacity:.25}}}}')
     style = """
 .tw{animation:tw 4s ease-in-out infinite}@keyframes tw{0%,100%{opacity:.9}50%{opacity:.15}}
 .win{animation:win 5s ease-in-out infinite}@keyframes win{0%,100%{opacity:.9}50%{opacity:.1}}
@@ -120,7 +140,7 @@ def header(theme):
 .cloud{animation:drift 40s linear infinite alternate}@keyframes drift{to{transform:translateX(60px)}}
 .halo{animation:halo 4s ease-in-out infinite}@keyframes halo{50%{opacity:.08}}
 .rise{animation:rise 1s cubic-bezier(.2,.8,.2,1) both}@keyframes rise{from{transform:translateY(14px)}to{transform:none}}
-"""
+""" + qstyle
     return svg(W, H, ''.join(b), style, defs, f'{NAME} — full-stack developer')
 
 
